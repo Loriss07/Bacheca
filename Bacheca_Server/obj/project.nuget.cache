@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "lUVBgjUNJbzJMeQ4qSuVSt4iBM3QGBm9euYScalG2wFowbxhIkwkaVbXR3NxGxuVsyKtEshb7ZBnH0Qr6h11GQ==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\loris\\source\\repos\\Bacheca\\Bacheca_Server\\Bacheca_Server.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\loris\\.nuget\\packages\\microsoft.netcore.app.host.win-x64\\3.1.24\\microsoft.netcore.app.host.win-x64.3.1.24.nupkg.sha512"
+  ],
+  "logs": []
+}
