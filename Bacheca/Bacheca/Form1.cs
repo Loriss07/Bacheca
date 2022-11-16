@@ -6,20 +6,27 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Net;
 using System.Windows.Forms;
 
 namespace Bacheca
 {
-    public partial class Form1 : Form
+    public partial class Client_Bacheca : Form
     {
-        public Form1()
+        private Login Login;
+        private Connection Client;
+        public Client_Bacheca(IPAddress IP, string username)
         {
             InitializeComponent();
+            Usr.Text = username;
         }
 
-        private void textBox1_TextChanged(object sender, EventArgs e)
+        private void Send_Click(object sender, EventArgs e)
         {
-
+            Item attivita = new Item();
+            attivita.Text = TestoAttivita.Text;
         }
     }
+    
+    
 }
