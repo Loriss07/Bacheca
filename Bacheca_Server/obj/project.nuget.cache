@@ -1,10 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "lUVBgjUNJbzJMeQ4qSuVSt4iBM3QGBm9euYScalG2wFowbxhIkwkaVbXR3NxGxuVsyKtEshb7ZBnH0Qr6h11GQ==",
+  "dgSpecHash": "cUDBcfMV0B8KYMdRXIrN/hm0BBs8Sfgkqsi8kSWY9eKEfxYbFgc1LvarOYP2rjNzxs8s1ad9uhcL0TCfQk+ryA==",
   "success": true,
-  "projectFilePath": "C:\\Users\\loris\\source\\repos\\Bacheca\\Bacheca_Server\\Bacheca_Server.csproj",
-  "expectedPackageFiles": [
-    "C:\\Users\\loris\\.nuget\\packages\\microsoft.netcore.app.host.win-x64\\3.1.24\\microsoft.netcore.app.host.win-x64.3.1.24.nupkg.sha512"
-  ],
+  "projectFilePath": "C:\\Users\\rota.18186\\Source\\Repos\\Loriss07\\Bacheca\\Bacheca_Server\\Bacheca_Server.csproj",
+  "expectedPackageFiles": [],
   "logs": []
 }
