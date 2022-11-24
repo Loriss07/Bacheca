@@ -5,12 +5,18 @@ Una bacheca raggiungibile da più client
 	Di principio ogni bacheca possiede un nome unico, e conoscendo il nome è possibile visualizzare dall'esterno la bacheca se questa non fosse condivisa.
 
 - Ogni file si chiamerà con una sigla 
-
-
 - Forma pacchetto (nome - caratteri): 
 	----------------------------------------------------------------------------------
 	username 32 | bacheca 16 | visibilità 1 | lunghezza 8 | tipo 1 | data | testo 255
 	----------------------------------------------------------------------------------
 		   
 	Username - il nome dell'utente che scrive il messaggio.
+	Bacheca - il nome della bacheca su cui si aggiunge il messaggio
 	Visibilità - indica se il messaggio che viene inviato
+	Lunghezza - la lunghezza del messaggio
+	Testo - il contenuto del promemoria
+- Richiesta di "scaricare" i promemoria perché vengano visualizzati :
+ 	-------------------------------------
+	username 32 | bacheca 16 | DOWNLOAD |
+	-------------------------------------
+		   
