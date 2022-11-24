@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\loris\\source\\repos\\Loriss07\\Bacheca\\Bacheca_Server\\Bacheca_Server.csproj": {}
+    "C:\\Users\\loris\\Source\\Repos\\Loriss07\\Bacheca\\Bacheca_Server\\Bacheca_Server.csproj": {}
   },
   "projects": {
-    "C:\\Users\\loris\\source\\repos\\Loriss07\\Bacheca\\Bacheca_Server\\Bacheca_Server.csproj": {
+    "C:\\Users\\loris\\Source\\Repos\\Loriss07\\Bacheca\\Bacheca_Server\\Bacheca_Server.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\loris\\source\\repos\\Loriss07\\Bacheca\\Bacheca_Server\\Bacheca_Server.csproj",
+        "projectUniqueName": "C:\\Users\\loris\\Source\\Repos\\Loriss07\\Bacheca\\Bacheca_Server\\Bacheca_Server.csproj",
         "projectName": "Bacheca_Server",
-        "projectPath": "C:\\Users\\loris\\source\\repos\\Loriss07\\Bacheca\\Bacheca_Server\\Bacheca_Server.csproj",
+        "projectPath": "C:\\Users\\loris\\Source\\Repos\\Loriss07\\Bacheca\\Bacheca_Server\\Bacheca_Server.csproj",
         "packagesPath": "C:\\Users\\loris\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\loris\\source\\repos\\Loriss07\\Bacheca\\Bacheca_Server\\obj\\",
+        "outputPath": "C:\\Users\\loris\\Source\\Repos\\Loriss07\\Bacheca\\Bacheca_Server\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\loris\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -49,12 +49,6 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
-          "downloadDependencies": [
-            {
-              "name": "Microsoft.NETCore.App.Host.win-x64",
-              "version": "[3.1.24, 3.1.24]"
-            }
-          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
