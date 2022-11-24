@@ -36,6 +36,10 @@ namespace Bacheca
                 
             return msg;
         }
+        public string Unpack(string msg)
+        {
+            
+        }
     }
 
     internal class ClientSide
