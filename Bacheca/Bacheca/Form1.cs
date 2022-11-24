@@ -7,24 +7,41 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Net;
+using System.Net.Sockets;
 using System.Windows.Forms;
 
 namespace Bacheca
 {
     public partial class Client_Bacheca : Form
     {
-        private Login Login;
+        private string _usr;
+        private IPAddress _IP;
         private ClientSide Client;
+        private Login _form;
 
-        public Client_Bacheca(IPAddress IP, string username)
+        public string Username { set { _usr = value; } get { return _usr; } }
+        public IPAddress IP { set { _IP = value; } get { return _IP; } }
+        public Client_Bacheca()
+        {  InitializeComponent(); }
+        public void Run(IPAddress IP, string username)
         {
-            InitializeComponent();
+
+            Show();
             Usr.Text = username;
             Client = new ClientSide();
-            Client.Connect(IP, 50000);
+/*
+            try
+            {
+                Client.Connect(IP, 50000);
+            }
+            catch (SocketException ex)
+            {
+                MessageBox.Show("Qualcosa è andato storto... " + ex.HelpLink);
+            }
 
 
             //  Recupera gli oggetti dal server se presenti
+            Client.Download();*/
         }
 
         private void Send_Click(object sender, EventArgs e)
@@ -35,6 +52,29 @@ namespace Bacheca
             attivita.Text = TestoAttivita.Text;
             attivita.Username = Usr.Text;
             attivita.Visibility = Public.Checked;
+            
+            Client.Send(attivita);
+        }
+
+
+        private void Client_Bacheca_Paint(object sender, PaintEventArgs e)
+        {
+            // Disegna la grafica della bacheca  
+            Graphics DrawBoard = e.Graphics;
+            DrawBoard.DrawRectangle(new Pen(Color.Red),
+                    new Rectangle(0,0,Board.Width,Board.Height));
+            Update();
+        }
+
+        private void Client_Bacheca_Load(object sender, EventArgs e)
+        {
+            _form =(Login)Owner;
+        }
+
+        private void Client_Bacheca_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            
+            _form.Dispose();
         }
     }
     

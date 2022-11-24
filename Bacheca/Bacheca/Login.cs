@@ -20,10 +20,17 @@ namespace Bacheca
 
         private void btnLogin_Click(object sender, EventArgs e)
         {
-            IPAddress IP = IPAddress.Parse(Ip.Text);
-            Client_Bacheca Bacheca = new Client_Bacheca(IP,Usr.Text);
-            Bacheca.Show();
-            Close();
+            try { 
+                IPAddress IP = IPAddress.Parse(Ip.Text);
+                Client_Bacheca Bacheca = new Client_Bacheca();
+                Bacheca.Owner = this;
+                Bacheca.Run(IP,Usr.Text);
+                Hide();
+            }
+            catch (FormatException fe) { 
+                MessageBox.Show("IP non valido");
+                Ip.Clear();
+            }
         }
     }
 }

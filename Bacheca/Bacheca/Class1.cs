@@ -29,7 +29,7 @@ namespace Bacheca
         public string Board { get { return board_name; } }
         public DateTime Date { get { return fixed_date; } set { fixed_date = value; } }
 
-        private string Code()
+        public string Pack()
         {
             string msg = "";
                 msg += Username + "|" + Board + "|" + Visibility.ToString() + "|" + /* Lunghezza + Tipo +*/ Date.ToString() + "|" + Text;
@@ -41,13 +41,41 @@ namespace Bacheca
     internal class ClientSide
     {
         private Socket socket;
+        private List<Item> Memos;   //La lista che salva i promemoria
 
-        public ClientSide() { socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp); }
+        public ClientSide() { 
+            socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            Memos = new List<Item>();
+        }
 
         public void Connect(IPAddress serverIp, int Port)
         {
             EndPoint Server = new IPEndPoint(serverIp, Port);
             socket.Connect(Server);
         }
+
+        public List<Item> Download()
+        /*Recupera i promemoria dal server e li mostra sul client*/
+        {
+            List<Item> list = new List<Item>();
+            return null;
+        }
+
+        public void Send(Item memo)
+        /*Manda un promemoria al server*/
+        { 
+            string msg = memo.Pack();
+            byte[] packet = Encoding.ASCII.GetBytes(msg);
+            Add(memo);
+            
+            socket.Send(packet);
+        }
+
+        private void Add(Item memo)
+        /* Salva in locale il promemoria */
+        {
+            Memos.Add(memo);
+        }
     }
+
 }

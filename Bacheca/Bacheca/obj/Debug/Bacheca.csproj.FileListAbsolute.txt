@@ -10,3 +10,15 @@ C:\Users\loris\source\repos\Bacheca\Bacheca\Bacheca\Bacheca\obj\Debug\Bacheca.cs
 C:\Users\loris\source\repos\Bacheca\Bacheca\Bacheca\Bacheca\obj\Debug\Bacheca.csproj.CoreCompileInputs.cache
 C:\Users\loris\source\repos\Bacheca\Bacheca\Bacheca\Bacheca\obj\Debug\Bacheca.exe
 C:\Users\loris\source\repos\Bacheca\Bacheca\Bacheca\Bacheca\obj\Debug\Bacheca.pdb
+C:\Users\loris\Source\Repos\Loriss07\Bacheca\Bacheca\Bacheca\bin\Debug\Bacheca.exe.config
+C:\Users\loris\Source\Repos\Loriss07\Bacheca\Bacheca\Bacheca\bin\Debug\Bacheca.exe
+C:\Users\loris\Source\Repos\Loriss07\Bacheca\Bacheca\Bacheca\bin\Debug\Bacheca.pdb
+C:\Users\loris\Source\Repos\Loriss07\Bacheca\Bacheca\Bacheca\obj\Debug\Bacheca.csproj.AssemblyReference.cache
+C:\Users\loris\Source\Repos\Loriss07\Bacheca\Bacheca\Bacheca\obj\Debug\Bacheca.csproj.SuggestedBindingRedirects.cache
+C:\Users\loris\Source\Repos\Loriss07\Bacheca\Bacheca\Bacheca\obj\Debug\Bacheca.Client_Bacheca.resources
+C:\Users\loris\Source\Repos\Loriss07\Bacheca\Bacheca\Bacheca\obj\Debug\Bacheca.Login.resources
+C:\Users\loris\Source\Repos\Loriss07\Bacheca\Bacheca\Bacheca\obj\Debug\Bacheca.Properties.Resources.resources
+C:\Users\loris\Source\Repos\Loriss07\Bacheca\Bacheca\Bacheca\obj\Debug\Bacheca.csproj.GenerateResource.cache
+C:\Users\loris\Source\Repos\Loriss07\Bacheca\Bacheca\Bacheca\obj\Debug\Bacheca.csproj.CoreCompileInputs.cache
+C:\Users\loris\Source\Repos\Loriss07\Bacheca\Bacheca\Bacheca\obj\Debug\Bacheca.exe
+C:\Users\loris\Source\Repos\Loriss07\Bacheca\Bacheca\Bacheca\obj\Debug\Bacheca.pdb
