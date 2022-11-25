@@ -13,17 +13,31 @@ namespace Bacheca_Server
     public class Server_Bacheca
     {
         private Socket socket;
+        private EndPoint endPoint;
 
-        public Server_Bacheca()
+        public Server_Bacheca(IPAddress IP, int port)
         {
             socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            endPoint = new IPEndPoint(IP, port);
         }
-        public void Start(IPAddress IP,int port)
+        public void Start()
         {
-            IPEndPoint EndPoint = new IPEndPoint(IP, port);
-            socket.Bind(EndPoint);
-            socket.Listen(20);
+            
+            try {
+                socket.Bind(endPoint);
+                socket.Listen(20);
+
+               
+            }
+            catch (SocketException se)
+            {
+               
+            }
+            
         }
+
+        
+
 
     }
     public class Item

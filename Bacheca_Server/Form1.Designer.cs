@@ -29,43 +29,36 @@ namespace Bacheca_Server
         /// </summary>
         private void InitializeComponent()
         {
-            this.listBox1 = new System.Windows.Forms.ListBox();
-            this.cancel = new System.Windows.Forms.Button();
-            this.monthCalendar1 = new System.Windows.Forms.MonthCalendar();
+            this.BoardFiles = new System.Windows.Forms.ListBox();
+            this.button1 = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
-            // listBox1
+            // BoardFiles
             // 
-            this.listBox1.FormattingEnabled = true;
-            this.listBox1.ItemHeight = 20;
-            this.listBox1.Location = new System.Drawing.Point(376, 12);
-            this.listBox1.Name = "listBox1";
-            this.listBox1.Size = new System.Drawing.Size(318, 364);
-            this.listBox1.TabIndex = 0;
+            this.BoardFiles.FormattingEnabled = true;
+            this.BoardFiles.ItemHeight = 15;
+            this.BoardFiles.Location = new System.Drawing.Point(12, 12);
+            this.BoardFiles.Name = "BoardFiles";
+            this.BoardFiles.Size = new System.Drawing.Size(285, 304);
+            this.BoardFiles.TabIndex = 0;
             // 
-            // cancel
+            // button1
             // 
-            this.cancel.Location = new System.Drawing.Point(711, 347);
-            this.cancel.Name = "cancel";
-            this.cancel.Size = new System.Drawing.Size(77, 29);
-            this.cancel.TabIndex = 1;
-            this.cancel.Text = "Cancella";
-            this.cancel.UseVisualStyleBackColor = true;
-            // 
-            // monthCalendar1
-            // 
-            this.monthCalendar1.Location = new System.Drawing.Point(18, 18);
-            this.monthCalendar1.Name = "monthCalendar1";
-            this.monthCalendar1.TabIndex = 2;
+            this.button1.Location = new System.Drawing.Point(303, 293);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(75, 23);
+            this.button1.TabIndex = 1;
+            this.button1.Text = "Chiudi server";
+            this.button1.UseVisualStyleBackColor = true;
             // 
             // Form1
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
-            this.Controls.Add(this.monthCalendar1);
-            this.Controls.Add(this.cancel);
-            this.Controls.Add(this.listBox1);
+            this.ClientSize = new System.Drawing.Size(405, 330);
+            this.Controls.Add(this.button1);
+            this.Controls.Add(this.BoardFiles);
+            this.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.Name = "Form1";
             this.Text = "Form1";
             this.ResumeLayout(false);
@@ -74,9 +67,8 @@ namespace Bacheca_Server
 
         #endregion
 
-        private System.Windows.Forms.ListBox listBox1;
-        private System.Windows.Forms.Button cancel;
-        private System.Windows.Forms.MonthCalendar monthCalendar1;
+        private System.Windows.Forms.ListBox BoardFiles;
+        private System.Windows.Forms.Button button1;
     }
 }
 

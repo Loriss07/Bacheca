@@ -8,20 +8,28 @@
     ".NETCoreApp,Version=v3.1": []
   },
   "packageFolders": {
-    "C:\\Users\\loris\\.nuget\\packages\\": {}
+    "C:\\Users\\rota.18186\\.nuget\\packages\\": {},
+    "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {},
+    "C:\\Program Files (x86)\\Microsoft\\Xamarin\\NuGet\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\loris\\Source\\Repos\\Loriss07\\Bacheca\\Bacheca_Server\\Bacheca_Server.csproj",
+      "projectUniqueName": "C:\\Users\\rota.18186\\source\\repos\\Loriss07\\Bacheca\\Bacheca_Server\\Bacheca_Server.csproj",
       "projectName": "Bacheca_Server",
-      "projectPath": "C:\\Users\\loris\\Source\\Repos\\Loriss07\\Bacheca\\Bacheca_Server\\Bacheca_Server.csproj",
-      "packagesPath": "C:\\Users\\loris\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\loris\\Source\\Repos\\Loriss07\\Bacheca\\Bacheca_Server\\obj\\",
+      "projectPath": "C:\\Users\\rota.18186\\source\\repos\\Loriss07\\Bacheca\\Bacheca_Server\\Bacheca_Server.csproj",
+      "packagesPath": "C:\\Users\\rota.18186\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\rota.18186\\source\\repos\\Loriss07\\Bacheca\\Bacheca_Server\\obj\\",
       "projectStyle": "PackageReference",
+      "fallbackFolders": [
+        "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages",
+        "C:\\Program Files (x86)\\Microsoft\\Xamarin\\NuGet\\"
+      ],
       "configFilePaths": [
-        "C:\\Users\\loris\\AppData\\Roaming\\NuGet\\NuGet.Config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        "C:\\Users\\rota.18186\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
       ],
       "originalTargetFrameworks": [
         "netcoreapp3.1"
@@ -63,7 +71,7 @@
             "privateAssets": "none"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.202\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.202\\RuntimeIdentifierGraph.json"
       }
     }
   }

@@ -1,0 +1,15 @@
+C:\Users\rota.18186\source\repos\Loriss07\Bacheca\Bacheca_Server\bin\Debug\netcoreapp3.1\Bacheca_Server.exe
+C:\Users\rota.18186\source\repos\Loriss07\Bacheca\Bacheca_Server\bin\Debug\netcoreapp3.1\Bacheca_Server.deps.json
+C:\Users\rota.18186\source\repos\Loriss07\Bacheca\Bacheca_Server\bin\Debug\netcoreapp3.1\Bacheca_Server.runtimeconfig.json
+C:\Users\rota.18186\source\repos\Loriss07\Bacheca\Bacheca_Server\bin\Debug\netcoreapp3.1\Bacheca_Server.runtimeconfig.dev.json
+C:\Users\rota.18186\source\repos\Loriss07\Bacheca\Bacheca_Server\bin\Debug\netcoreapp3.1\Bacheca_Server.dll
+C:\Users\rota.18186\source\repos\Loriss07\Bacheca\Bacheca_Server\bin\Debug\netcoreapp3.1\Bacheca_Server.pdb
+C:\Users\rota.18186\source\repos\Loriss07\Bacheca\Bacheca_Server\obj\Debug\netcoreapp3.1\Bacheca_Server.csprojAssemblyReference.cache
+C:\Users\rota.18186\source\repos\Loriss07\Bacheca\Bacheca_Server\obj\Debug\netcoreapp3.1\Bacheca_Server.Form1.resources
+C:\Users\rota.18186\source\repos\Loriss07\Bacheca\Bacheca_Server\obj\Debug\netcoreapp3.1\Bacheca_Server.csproj.GenerateResource.cache
+C:\Users\rota.18186\source\repos\Loriss07\Bacheca\Bacheca_Server\obj\Debug\netcoreapp3.1\Bacheca_Server.AssemblyInfoInputs.cache
+C:\Users\rota.18186\source\repos\Loriss07\Bacheca\Bacheca_Server\obj\Debug\netcoreapp3.1\Bacheca_Server.AssemblyInfo.cs
+C:\Users\rota.18186\source\repos\Loriss07\Bacheca\Bacheca_Server\obj\Debug\netcoreapp3.1\Bacheca_Server.csproj.CoreCompileInputs.cache
+C:\Users\rota.18186\source\repos\Loriss07\Bacheca\Bacheca_Server\obj\Debug\netcoreapp3.1\Bacheca_Server.dll
+C:\Users\rota.18186\source\repos\Loriss07\Bacheca\Bacheca_Server\obj\Debug\netcoreapp3.1\Bacheca_Server.pdb
+C:\Users\rota.18186\source\repos\Loriss07\Bacheca\Bacheca_Server\obj\Debug\netcoreapp3.1\Bacheca_Server.genruntimeconfig.cache
