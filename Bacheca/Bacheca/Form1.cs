@@ -15,11 +15,13 @@ namespace Bacheca
     public partial class Client_Bacheca : Form
     {
         private string _usr;
+        private string _boardname;
         private IPAddress _IP;
         private ClientSide Client;
         private Login _form;
 
         public string Username { set { _usr = value; } get { return _usr; } }
+        public string BoardName { set { _boardname = value; } get { return _boardname; } }
         public IPAddress IP { set { _IP = value; } get { return _IP; } }
         public Client_Bacheca()
         {  InitializeComponent(); }
@@ -28,6 +30,7 @@ namespace Bacheca
 
             Show();
             Usr.Text = username;
+            BoardName = _boardname;
             Client = new ClientSide();
 /*
             try
