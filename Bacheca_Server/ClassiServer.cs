@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Net;
 using System.Net.Sockets;
+using System.IO;
 
 namespace Bacheca_Server
 {
@@ -58,42 +59,73 @@ namespace Bacheca_Server
         public string Username { get { return username; } set { username = value; } }
         public string Text { get { return text; } set { text = value; } }
         public bool Visibility { get { return visible; } set { visible = value; } }
-        public string Board { get { return board_name; } }
+        public int Length { get { return length; } set { length = value; } }
+        public string Board { get { return board_name; } set { board_name = value; } }
         public DateTime Date { get { return fixed_date; } set { fixed_date = value; } }
 
-        public string Pack()
+        public byte[] Pack()
         {
             string msg = "";
-            msg += Username + "|" + Board + "|" + Visibility.ToString() + "|" + /* Lunghezza + Tipo +*/ Date.ToString() + "|" + Text;
+            msg += Username + "|" + Board + "|" + Visibility.ToString() + "|" +
+                    Convert.ToString(Text.Length) + "|" +/*Tipo +*/ Date.ToString() + "|" + Text + "| *£*";
 
-            return msg;
+            byte[] output = Encoding.ASCII.GetBytes(msg);
+            return output;
         }
-        public string Unpack(string msg)
-        {
 
-            return "";
+        public static List<Item> Unzip(string msg)
+        /*Crea la lista di memo che poi viene usata dal client - è statico*/
+        {
+            List<Item> Memolist = new List<Item>();
+            char[] delim = "*£*".ToCharArray();
+            string[] Memos = msg.Split(delim);  //Separa i messaggi
+            foreach (string memo in Memos)
+            {
+                string[] memo_comp = memo.Split('|');
+                Item m = new Item();
+                m.Username = memo_comp[0];
+                m.Board = memo_comp[1];
+                m.Visibility = Convert.ToBoolean(memo_comp[2]);
+                m.Length = Convert.ToInt32(memo_comp[3]);
+                m.Date = DateTime.Parse(memo_comp[4]);
+                m.Text = memo_comp[5];
+            }
+
+            return Memolist;
         }
     }
 
     public class Board
     {
-        string filepath;
+        string filename;
+        string path;
         string name;
+        string owner;
         bool prvt;
 
         public Board()
         {
-            filepath = "";
+            path = "";
             name = "MyBoard";
         }
-        public void Create(string name, string filepath)
+        public void Create(string name, bool visible)
         {
             this.name = name;
-            this.filepath = filepath;
+            filename = name + ".txt";
+            path = Environment.CurrentDirectory;
+            path = path.Substring(0, path.IndexOf("bin")) + "Boards";
+            prvt = !visible;
+            if (!Directory.Exists(path))
+                Directory.CreateDirectory(path);
+
+            path = Path.Combine(path, filename);
+            File.Create(path);
         }
+        
         public void AddMemo(Item memo)
         {
             // Scrive il memo nel file
+
         }
     }
 }

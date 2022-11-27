@@ -19,10 +19,13 @@ namespace Bacheca_Server
         public IPAddress IP = IPAddress.Parse("127.0.0.1");
         public Form1()
         {
-            Thread ServerListening = new Thread(new ThreadStart(Server.Start));
+            
             InitializeComponent();
             Server = new Server_Bacheca(IP,50000);
-            ServerListening.Start();
+            //Thread ServerListening = new Thread(new ThreadStart(Server.Start));
+            //ServerListening.Start();
+            Board a = new Board();
+            a.Create("a",true);
         }
 
 
