@@ -4,6 +4,7 @@ using System.Text;
 using System.Net;
 using System.Net.Sockets;
 using System.IO;
+using System.Text.Json;
 
 namespace Bacheca_Server
 {
@@ -37,7 +38,15 @@ namespace Bacheca_Server
             
         }
 
-        
+        public void SendBoard(Board ReqBoard)
+        {
+
+            object m = JsonSerializer.Deserialize(ReqBoard.BoardPath,typeof(List<Item>));
+
+            List<Item> list = m as List<Item>;
+            
+        }
+
 
 
     }
@@ -66,7 +75,7 @@ namespace Bacheca_Server
         public byte[] Pack()
         {
             string msg = "";
-            msg += Username + "|" + Board + "|" + Visibility.ToString() + "|" +
+            msg += "^|"+ Username + "|" + Board + "|" + Visibility.ToString() + "|" +
                     Convert.ToString(Text.Length) + "|" +/*Tipo +*/ Date.ToString() + "|" + Text + "| *£*";
 
             byte[] output = Encoding.ASCII.GetBytes(msg);
@@ -101,17 +110,22 @@ namespace Bacheca_Server
         string path;
         string name;
         string owner;
+        List<Item> memos;
         bool prvt;
 
+        public string Name { get { return name; } set { name = value; } }
+        public string BoardPath { get { return path; } set { path = value; } }
+        public string Owner { get { return owner; } set { owner = value; } }
         public Board()
         {
             path = "";
             name = "MyBoard";
         }
+        
         public void Create(string name, bool visible)
         {
             this.name = name;
-            filename = name + ".txt";
+            filename = name + ".json";
             path = Environment.CurrentDirectory;
             path = path.Substring(0, path.IndexOf("bin")) + "Boards";
             prvt = !visible;
@@ -119,13 +133,30 @@ namespace Bacheca_Server
                 Directory.CreateDirectory(path);
 
             path = Path.Combine(path, filename);
-            File.Create(path);
+            FileStream file = File.Create(path);
+            file.Write(Encoding.ASCII.GetBytes("[ ]"));
         }
-        
+        public void Load()
+        {
+            memos = JsonSerializer.Deserialize(path,typeof(List<Item>)) as List<Item>;
+        }
         public void AddMemo(Item memo)
         {
-            // Scrive il memo nel file
+            // Scrive il memo nel file json
+            memos.Add(memo);
 
+        }
+
+        public void RemoveMemo(Item memo)
+        {
+            //Rimuove il memo dal file
+            memos.Remove(memo);
+        }
+
+        public void EditMemo(Item Memo)
+        {
+            //Modifica il memo
+            
         }
     }
 }

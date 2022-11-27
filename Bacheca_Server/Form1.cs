@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using System.Threading;
 using System.Net;
 using System.Net.Sockets;
+using System.IO;
 
 namespace Bacheca_Server
 {
@@ -21,11 +22,16 @@ namespace Bacheca_Server
         {
             
             InitializeComponent();
+            string path = Environment.CurrentDirectory;
+            path = path.Substring(0, path.IndexOf("bin")) + "Boards";
+            Directory.GetFiles(path);
+            foreach (string file in Directory.GetFiles(path))
+                BoardFiles.Items.Add(file);
+
             Server = new Server_Bacheca(IP,50000);
-            //Thread ServerListening = new Thread(new ThreadStart(Server.Start));
-            //ServerListening.Start();
-            Board a = new Board();
-            a.Create("a",true);
+            Thread ServerListening = new Thread(new ThreadStart(Server.Start));
+            ServerListening.Start();
+            
         }
 
 

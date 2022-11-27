@@ -1,8 +1,17 @@
 {
   "version": 2,
-  "dgSpecHash": "iSravbdc2fqt2sTKL58qgfq5SGRrlzSM62xVPeJ9itJ5zIsU86GNzJqduvF5TIlLikO31CUnl+zwEnlMs7lEzA==",
+  "dgSpecHash": "4L3w+feuARozty6R0W4o91poE2odGyeufmA/v0JfHmWNQr5dKAWrGuS9czGHtuDIQbVsVKC2lC9tfEl/ID7LJw==",
   "success": true,
   "projectFilePath": "C:\\Users\\loris\\source\\repos\\Loriss07\\Bacheca\\Bacheca_Server\\Bacheca_Server.csproj",
-  "expectedPackageFiles": [],
+  "expectedPackageFiles": [
+    "C:\\Users\\loris\\.nuget\\packages\\microsoft.bcl.asyncinterfaces\\7.0.0\\microsoft.bcl.asyncinterfaces.7.0.0.nupkg.sha512",
+    "C:\\Users\\loris\\.nuget\\packages\\system.buffers\\4.5.1\\system.buffers.4.5.1.nupkg.sha512",
+    "C:\\Users\\loris\\.nuget\\packages\\system.memory\\4.5.5\\system.memory.4.5.5.nupkg.sha512",
+    "C:\\Users\\loris\\.nuget\\packages\\system.numerics.vectors\\4.5.0\\system.numerics.vectors.4.5.0.nupkg.sha512",
+    "C:\\Users\\loris\\.nuget\\packages\\system.runtime.compilerservices.unsafe\\6.0.0\\system.runtime.compilerservices.unsafe.6.0.0.nupkg.sha512",
+    "C:\\Users\\loris\\.nuget\\packages\\system.text.encodings.web\\7.0.0\\system.text.encodings.web.7.0.0.nupkg.sha512",
+    "C:\\Users\\loris\\.nuget\\packages\\system.text.json\\7.0.0\\system.text.json.7.0.0.nupkg.sha512",
+    "C:\\Users\\loris\\.nuget\\packages\\system.threading.tasks.extensions\\4.5.4\\system.threading.tasks.extensions.4.5.4.nupkg.sha512"
+  ],
   "logs": []
 }
