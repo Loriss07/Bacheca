@@ -5,13 +5,11 @@ using System.Net;
 using System.Net.Sockets;
 using System.IO;
 using System.Text.Json;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Bacheca_Server
 {
-    internal class ClassiServer
-    {
-    }
-
     public class Server_Bacheca
     {
         private Socket socket;
@@ -28,8 +26,17 @@ namespace Bacheca_Server
             try {
                 socket.Bind(endPoint);
                 socket.Listen(20);
+                Socket handler;
+                while (true)
+                {
+                    handler = socket.Accept();
 
-               
+                    ClientManager clientThread = new ClientManager(handler);
+                    Thread t = new Thread(new ThreadStart(clientThread.ReceiveRequests));
+                    t.Start();
+
+                }
+
             }
             catch (SocketException se)
             {
@@ -37,17 +44,7 @@ namespace Bacheca_Server
             }
             
         }
-
-        public void SendBoard(Board ReqBoard)
-        {
-
-            object m = JsonSerializer.Deserialize(ReqBoard.BoardPath,typeof(List<Item>));
-
-            List<Item> list = m as List<Item>;
-            
-        }
-
-
+        
 
     }
     public class Item
@@ -59,6 +56,7 @@ namespace Bacheca_Server
         private string text;
         private DateTime creation_time;
         private DateTime fixed_date;
+        private int id;
 
         public Item()
         {
@@ -103,7 +101,31 @@ namespace Bacheca_Server
             return Memolist;
         }
     }
+    public class BoardsManager
+    {
+        List<Board> BoardsList; 
 
+        public BoardsManager()
+        {
+            BoardsList =  new List<Board>();
+        }
+
+        public void GetBoards(Board[] boards)
+        {
+            BoardsList.AddRange(boards);
+        }
+        public static bool Exists(string name)
+        {
+            bool exists = false;
+            string path = Environment.CurrentDirectory;
+            path = path.Substring(0, path.IndexOf("bin")) + "Boards";
+            if (Directory.Exists(path))
+                foreach (string file in Directory.GetFiles(path))
+                    if (file.EndsWith(name + ".json"))
+                        exists = true;
+            return exists;
+        }
+    }
     public class Board
     {
         string filename;
@@ -116,12 +138,18 @@ namespace Bacheca_Server
         public string Name { get { return name; } set { name = value; } }
         public string BoardPath { get { return path; } set { path = value; } }
         public string Owner { get { return owner; } set { owner = value; } }
+        public bool Private { get { return prvt; } set { prvt = value; } }
         public Board()
         {
             path = "";
             name = "MyBoard";
         }
-        
+        public Board(string name,string owner)
+        {
+            path = "";
+            this.name = name;
+            this.owner = owner;
+        }
         public void Create(string name, bool visible)
         {
             this.name = name;
@@ -157,6 +185,65 @@ namespace Bacheca_Server
         {
             //Modifica il memo
             
+        }
+
+    }
+
+    public class ClientManager
+    {
+        Socket ManagerSocket;
+        byte[] bytes = new byte[1024];
+        string request = "";
+
+        public ClientManager(Socket handler)
+        {
+            ManagerSocket = handler;
+        }
+            
+        public void ReceiveRequests()
+        {
+                while (request.IndexOf("++") == -1 /*|| request.IndexOf("*£*") == -1*/)
+                {
+                    int bytesRec = ManagerSocket.Receive(bytes);
+                    request += Encoding.ASCII.GetString(bytes, 0, bytesRec);
+                }
+            if (request.EndsWith("++"))
+                Respond(request);
+            
+
+            Console.Write("Messaggio ricevuto : {0}", request);
+            request = "";
+            ManagerSocket.Shutdown(SocketShutdown.Both);
+            ManagerSocket.Close();
+        }
+
+        public void Respond(string request)
+        {
+            string res = "";
+            
+            switch (request.Split("|")[3])
+            {
+                case "DOWNLOAD++":
+                    {
+
+                    } break;
+
+                case "CHECK++":
+                    {
+                        res = "+" + BoardsManager.Exists(request.Split("|")[2]) + "++";
+                        byte[] outbound = Encoding.ASCII.GetBytes(res);
+                        ManagerSocket.Send(outbound);
+                    } break;
+            }
+        }
+
+        public void SendBoard(Board ReqBoard)
+        {
+
+            object m = JsonSerializer.Deserialize(ReqBoard.BoardPath, typeof(List<Item>));
+
+            List<Item> list = m as List<Item>;
+
         }
     }
 }

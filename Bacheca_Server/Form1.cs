@@ -24,9 +24,10 @@ namespace Bacheca_Server
             InitializeComponent();
             string path = Environment.CurrentDirectory;
             path = path.Substring(0, path.IndexOf("bin")) + "Boards";
-            Directory.GetFiles(path);
-            foreach (string file in Directory.GetFiles(path))
-                BoardFiles.Items.Add(file);
+
+            if (Directory.Exists(path))
+                foreach (string file in Directory.GetFiles(path))
+                    BoardFiles.Items.Add(file);
 
             Server = new Server_Bacheca(IP,50000);
             Thread ServerListening = new Thread(new ThreadStart(Server.Start));

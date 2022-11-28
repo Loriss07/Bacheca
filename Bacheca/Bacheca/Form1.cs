@@ -23,8 +23,7 @@ namespace Bacheca
         public string Username { set { _usr = value; } get { return _usr; } }
         public string BoardName { set { _boardname = value; } get { return _boardname; } }
         public IPAddress IP { set { _IP = value; } get { return _IP; } }
-        public Client_Bacheca()
-        {  InitializeComponent(); }
+        public Client_Bacheca() {  InitializeComponent(); }
         public void Run(IPAddress IP, string username)
         {
 
@@ -32,7 +31,7 @@ namespace Bacheca
             Usr.Text = username;
             BoardName = _boardname;
             Client = new ClientSide();
-/*
+
             try
             {
                 Client.Connect(IP, 50000);
@@ -44,7 +43,7 @@ namespace Bacheca
 
 
             //  Recupera gli oggetti dal server se presenti
-            Client.Download();*/
+              Client.Download(_boardname,_usr);
         }
 
         private void Send_Click(object sender, EventArgs e)

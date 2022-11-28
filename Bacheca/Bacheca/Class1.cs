@@ -28,13 +28,13 @@ namespace Bacheca
         public bool Visibility { get { return visible; } set { visible = value; } }
         public int Length { get { return length; } set { length = value; } }
         public string Board { get { return board_name; } set { board_name = value; } }
+        public DateTime CDate { get { return creation_time; } set { creation_time = value; } }
         public DateTime Date { get { return fixed_date; } set { fixed_date = value; } }
-
         public byte[] Pack()
         {
             string msg = "";
-                msg += Username + "|" + Board + "|" + Visibility.ToString() + "|" +  
-                        Convert.ToString(Text.Length) + "|" +/*Tipo +*/ Date.ToString() + "|" + Text + "| *£*";
+                msg += "^|" + Username + "|" + Board + "|" + Visibility.ToString() + "|" +  
+                        Convert.ToString(Text.Length) + "|" + Date.ToString() + "|" + Text + "| *£*";
 
             byte[] output = Encoding.ASCII.GetBytes(msg);
             return output;
@@ -48,7 +48,7 @@ namespace Bacheca
             string[] Memos = msg.Split(delim);  //Separa i messaggi
             foreach (string memo in Memos)
             {
-                string[] memo_comp = memo.Split('|');
+                string[] memo_comp = memo.Substring(2,memo.Length - 1).Split('|');
                 Item m = new Item();
                 m.Username = memo_comp[0];
                 m.Board = memo_comp[1];
@@ -90,14 +90,16 @@ namespace Bacheca
 
             List<Item> list = Item.Unzip(memo_string);
 
-            return null;
+            return list;
         }
         private void Request(string boardname,string user)
-            /* Richiede al server i messaggi salvati sulla bacheca */
+        /* Richiede al server i messaggi salvati sulla bacheca */
         {
-            string msg = "+" + user + "|" + boardname + "|DOWNLOAD++";
+            string data = "";
+            string msg = "+|" + user + "|" + boardname + "|DOWNLOAD++";
             byte[] req = Encoding.ASCII.GetBytes(msg);
             socket.Send(req);
+
         }
 
         public void Send(Item memo)
@@ -112,6 +114,25 @@ namespace Bacheca
         /* Salva in locale il promemoria */
         {
             Memos.Add(memo);
+        }
+
+        public string ExistsBoard(string boardname,string user)
+        {
+            //bool exists = false;
+            string msg = "+|" + user + "|" + boardname + "|CHECK++";
+            byte[] outboundReq = Encoding.ASCII.GetBytes(msg);
+
+            socket.Send(outboundReq);
+            string inbound = "";
+            byte[] inboundRes = new byte[1024];
+            int bytesRes = 0;
+            while (inbound.IndexOf("++") == -1)
+            {
+                bytesRes = socket.Receive(inboundRes);
+                inbound += Encoding.ASCII.GetString(inboundRes, 0, bytesRes);
+            }
+
+            return inbound;
         }
     }
 
