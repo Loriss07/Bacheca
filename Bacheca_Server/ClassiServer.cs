@@ -240,7 +240,7 @@ namespace Bacheca_Server
         private void Respond(string request)
         {
             string res = "";
-            
+            request
             switch (request.Split("|")[3])
             {
                 case "DOWNLOAD++":
@@ -257,7 +257,7 @@ namespace Bacheca_Server
                 case "CREATE++":
                     {
                         // Crea la bacheca
-                        
+                        string[] meta = request.Split("|");
                     } break;
             }
         }
