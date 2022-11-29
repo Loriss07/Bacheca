@@ -134,6 +134,12 @@ namespace Bacheca
 
             return inbound;
         }
+
+        public void CreateBoard(string boardname, string user, bool visible)
+            /* RIchiede la creazione di una bacheca */
+        {
+            string msg = "+|" + user + "|" + boardname + visible +"|CREATE++";
+        }
     }
 
 }

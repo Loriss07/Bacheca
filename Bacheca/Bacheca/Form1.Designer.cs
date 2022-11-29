@@ -37,13 +37,15 @@ namespace Bacheca
             this.Usr = new System.Windows.Forms.Label();
             this.Board = new System.Windows.Forms.Panel();
             this.boardName = new System.Windows.Forms.Label();
+            this.EditMemo = new System.Windows.Forms.Button();
+            this.DeleteMemo = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
             // TestoAttivita
             // 
             this.TestoAttivita.Location = new System.Drawing.Point(344, 405);
-            this.TestoAttivita.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.TestoAttivita.Margin = new System.Windows.Forms.Padding(4);
             this.TestoAttivita.Multiline = true;
             this.TestoAttivita.Name = "TestoAttivita";
             this.TestoAttivita.Size = new System.Drawing.Size(704, 133);
@@ -52,11 +54,11 @@ namespace Bacheca
             // Send
             // 
             this.Send.Location = new System.Drawing.Point(1057, 511);
-            this.Send.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.Send.Margin = new System.Windows.Forms.Padding(4);
             this.Send.Name = "Send";
             this.Send.Size = new System.Drawing.Size(77, 28);
             this.Send.TabIndex = 1;
-            this.Send.Text = "Invia";
+            this.Send.Text = "Salva";
             this.Send.UseVisualStyleBackColor = true;
             this.Send.Click += new System.EventHandler(this.Send_Click);
             // 
@@ -64,7 +66,7 @@ namespace Bacheca
             // 
             this.Public.AutoSize = true;
             this.Public.Location = new System.Drawing.Point(16, 422);
-            this.Public.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.Public.Margin = new System.Windows.Forms.Padding(4);
             this.Public.Name = "Public";
             this.Public.Size = new System.Drawing.Size(82, 20);
             this.Public.TabIndex = 2;
@@ -74,7 +76,7 @@ namespace Bacheca
             // dateTimePicker1
             // 
             this.dateTimePicker1.Location = new System.Drawing.Point(13, 392);
-            this.dateTimePicker1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.dateTimePicker1.Margin = new System.Windows.Forms.Padding(4);
             this.dateTimePicker1.Name = "dateTimePicker1";
             this.dateTimePicker1.Size = new System.Drawing.Size(204, 22);
             this.dateTimePicker1.TabIndex = 4;
@@ -82,7 +84,7 @@ namespace Bacheca
             // pictureBox1
             // 
             this.pictureBox1.Location = new System.Drawing.Point(30, 27);
-            this.pictureBox1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.pictureBox1.Margin = new System.Windows.Forms.Padding(4);
             this.pictureBox1.Name = "pictureBox1";
             this.pictureBox1.Size = new System.Drawing.Size(65, 57);
             this.pictureBox1.TabIndex = 7;
@@ -117,11 +119,31 @@ namespace Bacheca
             this.boardName.TabIndex = 10;
             this.boardName.Text = "Board";
             // 
+            // EditMemo
+            // 
+            this.EditMemo.Location = new System.Drawing.Point(16, 487);
+            this.EditMemo.Name = "EditMemo";
+            this.EditMemo.Size = new System.Drawing.Size(201, 23);
+            this.EditMemo.TabIndex = 11;
+            this.EditMemo.Text = "Modifica promemoria";
+            this.EditMemo.UseVisualStyleBackColor = true;
+            // 
+            // DeleteMemo
+            // 
+            this.DeleteMemo.Location = new System.Drawing.Point(16, 519);
+            this.DeleteMemo.Name = "DeleteMemo";
+            this.DeleteMemo.Size = new System.Drawing.Size(201, 23);
+            this.DeleteMemo.TabIndex = 12;
+            this.DeleteMemo.Text = "Elimina promemoria";
+            this.DeleteMemo.UseVisualStyleBackColor = true;
+            // 
             // Client_Bacheca
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1173, 554);
+            this.Controls.Add(this.DeleteMemo);
+            this.Controls.Add(this.EditMemo);
             this.Controls.Add(this.boardName);
             this.Controls.Add(this.Board);
             this.Controls.Add(this.Usr);
@@ -130,7 +152,7 @@ namespace Bacheca
             this.Controls.Add(this.Public);
             this.Controls.Add(this.Send);
             this.Controls.Add(this.TestoAttivita);
-            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "Client_Bacheca";
             this.Text = "Form1";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Client_Bacheca_FormClosed);
@@ -151,6 +173,8 @@ namespace Bacheca
         private System.Windows.Forms.Label Usr;
         private System.Windows.Forms.Panel Board;
         private System.Windows.Forms.Label boardName;
+        private System.Windows.Forms.Button EditMemo;
+        private System.Windows.Forms.Button DeleteMemo;
     }
 }
 

@@ -14,10 +14,13 @@ namespace Bacheca_Server
     {
         private Socket socket;
         private EndPoint endPoint;
+        private BoardsManager BoardsManager;
 
+        
         public Server_Bacheca(IPAddress IP, int port)
         {
             socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            BoardsManager = new BoardsManager();
             endPoint = new IPEndPoint(IP, port);
         }
         public void Start()
@@ -31,7 +34,7 @@ namespace Bacheca_Server
                 {
                     handler = socket.Accept();
 
-                    ClientManager clientThread = new ClientManager(handler);
+                    ClientManager clientThread = new ClientManager(handler, ref BoardsManager);
                     Thread t = new Thread(new ThreadStart(clientThread.ReceiveRequests));
                     t.Start();
 
@@ -110,10 +113,6 @@ namespace Bacheca_Server
             BoardsList =  new List<Board>();
         }
 
-        public void GetBoards(Board[] boards)
-        {
-            BoardsList.AddRange(boards);
-        }
         public static bool Exists(string name)
         {
             bool exists = false;
@@ -123,50 +122,69 @@ namespace Bacheca_Server
                 foreach (string file in Directory.GetFiles(path))
                     if (file.EndsWith(name + ".json"))
                         exists = true;
+
             return exists;
         }
+
+        public void Create(string name,string user, bool visible)
+        {
+            BoardsList.Add(new Board(name,user,visible));
+        }
+
+
     }
     public class Board
     {
         string filename;
-        string path;
+        string filepath;
         string name;
         string owner;
         List<Item> memos;
         bool prvt;
 
         public string Name { get { return name; } set { name = value; } }
-        public string BoardPath { get { return path; } set { path = value; } }
+        public string BoardPath { get { return filepath; } set { filepath = value; } }
         public string Owner { get { return owner; } set { owner = value; } }
         public bool Private { get { return prvt; } set { prvt = value; } }
         public Board()
         {
-            path = "";
+            filepath = "";
             name = "MyBoard";
         }
         public Board(string name,string owner)
         {
-            path = "";
+            filepath = "";
             this.name = name;
             this.owner = owner;
+            
         }
-        public void Create(string name, bool visible)
+        public Board(string name,string ownerUser,bool visible)
         {
             this.name = name;
+            owner = ownerUser;
             filename = name + ".json";
-            path = Environment.CurrentDirectory;
-            path = path.Substring(0, path.IndexOf("bin")) + "Boards";
+            filepath = Environment.CurrentDirectory;
+            filepath = filepath.Substring(0, filepath.IndexOf("bin")) + "Boards";
             prvt = !visible;
-            if (!Directory.Exists(path))
-                Directory.CreateDirectory(path);
+            if (!Directory.Exists(filepath))
+                Directory.CreateDirectory(filepath);
 
-            path = Path.Combine(path, filename);
-            FileStream file = File.Create(path);
+            filepath = Path.Combine(filepath, filename);
+            FileStream file = File.Create(filepath);
             file.Write(Encoding.ASCII.GetBytes("[ ]"));
         }
+        
         public void Load()
+            // Carica in memoria i promemoria
         {
-            memos = JsonSerializer.Deserialize(path,typeof(List<Item>)) as List<Item>;
+            memos = JsonSerializer.Deserialize(filepath,typeof(List<Item>)) as List<Item>;
+        }
+        public void Unload()
+            // Scarica i promemoria dalla memoria
+        {
+            string memoFile = JsonSerializer.Serialize(memos);
+            File.WriteAllText(filepath, memoFile);
+            memos.Clear();
         }
         public void AddMemo(Item memo)
         {
@@ -192,12 +210,14 @@ namespace Bacheca_Server
     public class ClientManager
     {
         Socket ManagerSocket;
+        BoardsManager BoardsManager;
         byte[] bytes = new byte[1024];
         string request = "";
 
-        public ClientManager(Socket handler)
+        public ClientManager(Socket handler,ref BoardsManager manager)
         {
             ManagerSocket = handler;
+            BoardsManager = manager;
         }
             
         public void ReceiveRequests()
@@ -217,7 +237,7 @@ namespace Bacheca_Server
             ManagerSocket.Close();
         }
 
-        public void Respond(string request)
+        private void Respond(string request)
         {
             string res = "";
             
@@ -233,6 +253,11 @@ namespace Bacheca_Server
                         res = "+" + BoardsManager.Exists(request.Split("|")[2]) + "++";
                         byte[] outbound = Encoding.ASCII.GetBytes(res);
                         ManagerSocket.Send(outbound);
+                    } break;
+                case "CREATE++":
+                    {
+                        // Crea la bacheca
+                        
                     } break;
             }
         }
