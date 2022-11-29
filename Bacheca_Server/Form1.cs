@@ -35,6 +35,14 @@ namespace Bacheca_Server
             
         }
 
+        private void Form1_Load(object sender, EventArgs e)
+        {
 
+        }
+
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            Server.Stop();
+        }
     }
 }

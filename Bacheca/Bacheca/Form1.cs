@@ -24,28 +24,32 @@ namespace Bacheca
         public string BoardName { set { _boardname = value; } get { return _boardname; } }
         public IPAddress IP { set { _IP = value; } get { return _IP; } }
         public Client_Bacheca() {  InitializeComponent(); }
-        public void Run(IPAddress IP, string username)
+        public void Run(IPAddress IP, string username,ref ClientSide client)
         {
 
             Show();
             Usr.Text = username;
             BoardName = _boardname;
-            Client = new ClientSide();
-
-            try
-            {
-                Client.Connect(IP, 50000);
-            }
-            catch (SocketException ex)
-            {
-                MessageBox.Show("Qualcosa è andato storto... " + ex.HelpLink);
-            }
-
+            
+            Client = client;
+           
 
             //  Recupera gli oggetti dal server se presenti
-              Client.Download(_boardname,_usr);
+            
+              
         }
+        private void PinMemo()
+        {
+            //Mostra i promemoria
+            if (Client.ExistsBoard(boardName.Text, Usr.Text) == "+TRUE++")
+            {
+                foreach (Item i in Client.Download(_boardname, _usr))
+                {
 
+                }
+            }
+            
+        }
         private void Send_Click(object sender, EventArgs e)
         {
             //Impacchetta il messaggio e lo spedisce
@@ -55,6 +59,7 @@ namespace Bacheca
             attivita.Username = Usr.Text;
             attivita.Visibility = Public.Checked;
             
+
             Client.Send(attivita);
         }
 

@@ -44,25 +44,28 @@ namespace Bacheca
         /*Crea la lista di memo che poi viene usata dal client - è statico*/
         {
             List<Item> Memolist = new List<Item>();
-            char[] delim = "*£*".ToCharArray(); 
-            string[] Memos = msg.Split(delim);  //Separa i messaggi
-            foreach (string memo in Memos)
+            if (msg.Length > 1)
             {
-                string[] memo_comp = memo.Substring(2,memo.Length - 1).Split('|');
-                Item m = new Item();
-                m.Username = memo_comp[0];
-                m.Board = memo_comp[1];
-                m.Visibility = Convert.ToBoolean(memo_comp[2]);
-                m.Length = Convert.ToInt32(memo_comp[3]);
-                m.Date = DateTime.Parse(memo_comp[4]);
-                m.Text = memo_comp[5];
-            }
                 
+                char[] delim = "*£*".ToCharArray();
+                string[] Memos = msg.Split(delim);  //Separa i messaggi
+                foreach (string memo in Memos)
+                {
+                    string[] memo_comp = memo.Substring(2, memo.Length - 1).Split('|');
+                    Item m = new Item();
+                    m.Username = memo_comp[0];
+                    m.Board = memo_comp[1];
+                    m.Visibility = Convert.ToBoolean(memo_comp[2]);
+                    m.Length = Convert.ToInt32(memo_comp[3]);
+                    m.Date = DateTime.Parse(memo_comp[4]);
+                    m.Text = memo_comp[5];
+                }
+            }
             return Memolist;
         }
     }
 
-    internal class ClientSide
+    public class ClientSide
     {
         private Socket socket;
         private List<Item> Memos;   //La lista che salva i promemoria
@@ -74,8 +77,15 @@ namespace Bacheca
 
         public void Connect(IPAddress serverIp, int Port)
         {
-            EndPoint Server = new IPEndPoint(serverIp, Port);
-            socket.Connect(Server);
+            try
+            {
+                EndPoint Server = new IPEndPoint(serverIp, Port);
+                socket.Connect(Server);
+            }
+            catch (SocketException se)
+            {
+                throw new SocketException();
+            }
         }
 
         public List<Item> Download(string boardname, string user)
@@ -92,6 +102,7 @@ namespace Bacheca
 
             return list;
         }
+        
         private void Request(string boardname,string user)
         /* Richiede al server i messaggi salvati sulla bacheca */
         {
@@ -136,10 +147,14 @@ namespace Bacheca
         }
 
         public void CreateBoard(string boardname, string user, bool visible)
-            /* RIchiede la creazione di una bacheca */
+            /* Richiede la creazione di una bacheca */
         {
-            string msg = "+|" + user + "|" + boardname + visible +"|CREATE++";
+            string msg = "+|" + user + "|" + boardname + "|" + visible +"|CREATE++";
+            byte[] req = Encoding.ASCII.GetBytes(msg);
+            socket.Send(req);
         }
+
+        
     }
 
 }

@@ -37,8 +37,8 @@ namespace Bacheca_Server
                     ClientManager clientThread = new ClientManager(handler, ref BoardsManager);
                     Thread t = new Thread(new ThreadStart(clientThread.ReceiveRequests));
                     t.Start();
-
                 }
+                
 
             }
             catch (SocketException se)
@@ -48,6 +48,11 @@ namespace Bacheca_Server
             
         }
         
+        public void Stop()
+        {
+            socket.Disconnect(false);
+            socket.Dispose();
+        }
 
     }
     public class Item
@@ -66,6 +71,7 @@ namespace Bacheca_Server
             text = "";
             creation_time = DateTime.Now;
         }
+
         public string Username { get { return username; } set { username = value; } }
         public string Text { get { return text; } set { text = value; } }
         public bool Visibility { get { return visible; } set { visible = value; } }
@@ -83,35 +89,30 @@ namespace Bacheca_Server
             return output;
         }
 
-        public static List<Item> Unzip(string msg)
+        public static string Zip(List<Item> MemoList)
         /*Crea la lista di memo che poi viene usata dal client - è statico*/
         {
-            List<Item> Memolist = new List<Item>();
-            char[] delim = "*£*".ToCharArray();
-            string[] Memos = msg.Split(delim);  //Separa i messaggi
-            foreach (string memo in Memos)
+            string Memos = "";
+            if (MemoList.Count == 0)
             {
-                string[] memo_comp = memo.Split('|');
-                Item m = new Item();
-                m.Username = memo_comp[0];
-                m.Board = memo_comp[1];
-                m.Visibility = Convert.ToBoolean(memo_comp[2]);
-                m.Length = Convert.ToInt32(memo_comp[3]);
-                m.Date = DateTime.Parse(memo_comp[4]);
-                m.Text = memo_comp[5];
+                Memos = "^|";
+                foreach (Item memo in MemoList)
+                {
+                    Memos += memo.Username + "|" + memo.Board + "|" +
+                        memo.Visibility.ToString() + "|" + Convert.ToString(memo.Length) + "|" + memo.Date.ToString() + "|" + memo.Text + "| *£*"; ;
+                }
             }
 
-            return Memolist;
+
+
+            return Memos;
         }
     }
     public class BoardsManager
     {
         List<Board> BoardsList; 
 
-        public BoardsManager()
-        {
-            BoardsList =  new List<Board>();
-        }
+        public BoardsManager() { BoardsList =  new List<Board>(); }
 
         public static bool Exists(string name)
         {
@@ -125,27 +126,66 @@ namespace Bacheca_Server
 
             return exists;
         }
+        public void Open()
+        {
 
-        public void Create(string name,string user, bool visible)
+        }
+
+        public void CreateBoard(string name,string user, bool visible)
         {
             BoardsList.Add(new Board(name,user,visible));
         }
 
+        public string SendBoard(string name, string user)
+        {
+            string board;
+            if (GetBoard(name, user) >= 0)
+            {
+                Board ReqBoard = BoardsList[GetBoard(name, user)];
+                object m = JsonSerializer.Deserialize(ReqBoard.BoardPath, typeof(List<Item>));
+                List<Item> list = m as List<Item>;
 
+                board = Item.Zip(list);
+            }
+            else
+                board = "";
+
+            return board;
+        }
+
+        public int GetBoard(string name,string user)
+        {
+            int index = -1;
+            foreach (Board board in BoardsList)
+            {
+                if (board.ID == HashCode(name,user))
+                    index = BoardsList.IndexOf(board);
+            }
+            return index;
+        }
+
+        public int HashCode(string name, string user)
+        {
+            return (name[1] + name[2] + (name[0] * user[3])) % (name.Length + user.Length);
+        }
     }
     public class Board
     {
-        string filename;
-        string filepath;
-        string name;
-        string owner;
-        List<Item> memos;
-        bool prvt;
+        private string filename;
+        private string filepath;
+        private string name;
+        private string owner;
+        private List<Item> memos;
+        private bool prvt;
+        private DateTime creationTime;
+        private int id;
 
         public string Name { get { return name; } set { name = value; } }
         public string BoardPath { get { return filepath; } set { filepath = value; } }
         public string Owner { get { return owner; } set { owner = value; } }
         public bool Private { get { return prvt; } set { prvt = value; } }
+        public int ID { get { return id; } set { id = value; } }
+        public DateTime CreationTime { get { return creationTime; } set { creationTime = value; } }
         public Board()
         {
             filepath = "";
@@ -158,8 +198,12 @@ namespace Bacheca_Server
             this.owner = owner;
             
         }
+
+        //Crea la bacheca
         public Board(string name,string ownerUser,bool visible)
         {
+            
+            creationTime = DateTime.Now;
             this.name = name;
             owner = ownerUser;
             filename = name + ".json";
@@ -172,6 +216,7 @@ namespace Bacheca_Server
             filepath = Path.Combine(filepath, filename);
             FileStream file = File.Create(filepath);
             file.Write(Encoding.ASCII.GetBytes("[ ]"));
+            id = GetHashCode();
         }
         
         public void Load()
@@ -205,6 +250,8 @@ namespace Bacheca_Server
             
         }
 
+        public override int GetHashCode() { return (name[1] + name[2]) * (name[0] * owner[3]) % (name.Length + owner.Length); }
+
     }
 
     public class ClientManager
@@ -222,26 +269,41 @@ namespace Bacheca_Server
             
         public void ReceiveRequests()
         {
-                while (request.IndexOf("++") == -1 /*|| request.IndexOf("*£*") == -1*/)
-                {
-                    int bytesRec = ManagerSocket.Receive(bytes);
-                    request += Encoding.ASCII.GetString(bytes, 0, bytesRec);
-                }
-            if (request.EndsWith("++"))
-                Respond(request);
-            
-
-            Console.Write("Messaggio ricevuto : {0}", request);
-            request = "";
+            bool validReq = true;
+                
+                    while (request.IndexOf("++") == -1 && validReq && request.IndexOf("*£*") == -1)
+                    {
+                        int bytesRec = ManagerSocket.Receive(bytes);
+                        request += Encoding.ASCII.GetString(bytes, 0, bytesRec);
+                        if (request.Length > 0)
+                        {
+                            if (request[0] != '+' && request[0] != '^')
+                                validReq = false;
+                        }  
+                         else
+                            validReq = false;
+                    }
+                    if (request.EndsWith("++"))
+                        Respond(request);
+                    else if (request.EndsWith("*&*"))
+                        ManageMemo(request);
+                        
+                    Console.Write("Messaggio ricevuto : {0}", request);
+                    request = "";
+                
             ManagerSocket.Shutdown(SocketShutdown.Both);
             ManagerSocket.Close();
         }
+        private void ManageMemo(string request)
+        {
 
+        }
         private void Respond(string request)
         {
             string res = "";
-            request
-            switch (request.Split("|")[3])
+            string[] split = request.Split('|');
+            string reqType = split[split.Length - 1];
+            switch (reqType)
             {
                 case "DOWNLOAD++":
                     {
@@ -251,24 +313,21 @@ namespace Bacheca_Server
                 case "CHECK++":
                     {
                         res = "+" + BoardsManager.Exists(request.Split("|")[2]) + "++";
-                        byte[] outbound = Encoding.ASCII.GetBytes(res);
-                        ManagerSocket.Send(outbound);
+                        
                     } break;
                 case "CREATE++":
                     {
                         // Crea la bacheca
                         string[] meta = request.Split("|");
+                        BoardsManager.CreateBoard(meta[1],meta[2],Convert.ToBoolean(meta[3]));
+                        res = "+|OK++";
+
                     } break;
             }
+            byte[] outbound = Encoding.ASCII.GetBytes(res);
+            ManagerSocket.Send(outbound);
         }
 
-        public void SendBoard(Board ReqBoard)
-        {
-
-            object m = JsonSerializer.Deserialize(ReqBoard.BoardPath, typeof(List<Item>));
-
-            List<Item> list = m as List<Item>;
-
-        }
+        
     }
 }

@@ -36,31 +36,34 @@ namespace Bacheca_Server
             // BoardFiles
             // 
             this.BoardFiles.FormattingEnabled = true;
-            this.BoardFiles.ItemHeight = 15;
-            this.BoardFiles.Location = new System.Drawing.Point(12, 12);
+            this.BoardFiles.ItemHeight = 20;
+            this.BoardFiles.Location = new System.Drawing.Point(14, 16);
+            this.BoardFiles.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.BoardFiles.Name = "BoardFiles";
-            this.BoardFiles.Size = new System.Drawing.Size(285, 304);
+            this.BoardFiles.Size = new System.Drawing.Size(325, 404);
             this.BoardFiles.TabIndex = 0;
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(303, 293);
+            this.button1.Location = new System.Drawing.Point(346, 391);
+            this.button1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
+            this.button1.Size = new System.Drawing.Size(86, 31);
             this.button1.TabIndex = 1;
             this.button1.Text = "Chiudi server";
             this.button1.UseVisualStyleBackColor = true;
             // 
             // Form1
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(405, 330);
+            this.ClientSize = new System.Drawing.Size(463, 440);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.BoardFiles);
-            this.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.Name = "Form1";
             this.Text = "Form1";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
+            this.Load += new System.EventHandler(this.Form1_Load);
             this.ResumeLayout(false);
 
         }
