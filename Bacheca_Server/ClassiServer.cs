@@ -25,7 +25,7 @@ namespace Bacheca_Server
         }
         public void Start(object Form)
         {
-            Server_Bacheca Server = Form as Server_Bacheca;
+            
             try {
                 socket.Bind(endPoint);
                 socket.Listen(20);
@@ -36,7 +36,7 @@ namespace Bacheca_Server
 
                     ClientManager clientThread = new ClientManager(handler, ref BoardsManager);
                     Thread t = new Thread(new ParameterizedThreadStart(clientThread.ReceiveRequests));
-                    t.Start();
+                    t.Start(Form);
                 }
                 
 
