@@ -113,7 +113,7 @@ namespace Bacheca
             // boardName
             // 
             this.boardName.AutoSize = true;
-            this.boardName.Location = new System.Drawing.Point(103, 55);
+            this.boardName.Location = new System.Drawing.Point(103, 68);
             this.boardName.Name = "boardName";
             this.boardName.Size = new System.Drawing.Size(44, 16);
             this.boardName.TabIndex = 10;

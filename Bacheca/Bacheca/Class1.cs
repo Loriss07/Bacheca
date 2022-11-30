@@ -34,7 +34,7 @@ namespace Bacheca
         {
             string msg = "";
                 msg += "^|" + Username + "|" + Board + "|" + Visibility.ToString() + "|" +  
-                        Convert.ToString(Text.Length) + "|" + Date.ToString() + "|" + Text + "| *£*";
+                        Convert.ToString(Text.Length) + "|" + Date.ToString() + "|" + Text + "| **";
 
             byte[] output = Encoding.ASCII.GetBytes(msg);
             return output;
@@ -152,6 +152,14 @@ namespace Bacheca
             string msg = "+|" + user + "|" + boardname + "|" + visible +"|CREATE++";
             byte[] req = Encoding.ASCII.GetBytes(msg);
             socket.Send(req);
+            string inbound = "";
+            byte[] inboundRes = new byte[1024];
+            int bytesRes = 0;
+            while (inbound.IndexOf("++") == -1)
+            {
+                bytesRes = socket.Receive(inboundRes);
+                inbound += Encoding.ASCII.GetString(inboundRes, 0, bytesRes);
+            }
         }
 
         

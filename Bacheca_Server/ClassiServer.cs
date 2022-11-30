@@ -23,9 +23,9 @@ namespace Bacheca_Server
             BoardsManager = new BoardsManager();
             endPoint = new IPEndPoint(IP, port);
         }
-        public void Start()
+        public void Start(object Form)
         {
-            
+            Server_Bacheca Server = Form as Server_Bacheca;
             try {
                 socket.Bind(endPoint);
                 socket.Listen(20);
@@ -35,7 +35,7 @@ namespace Bacheca_Server
                     handler = socket.Accept();
 
                     ClientManager clientThread = new ClientManager(handler, ref BoardsManager);
-                    Thread t = new Thread(new ThreadStart(clientThread.ReceiveRequests));
+                    Thread t = new Thread(new ParameterizedThreadStart(clientThread.ReceiveRequests));
                     t.Start();
                 }
                 
@@ -52,6 +52,7 @@ namespace Bacheca_Server
         {
             socket.Disconnect(false);
             socket.Dispose();
+            
         }
 
     }
@@ -69,6 +70,10 @@ namespace Bacheca_Server
         public Item()
         {
             text = "";
+            board_name = "";
+            visible = false;
+            length = 0;
+
             creation_time = DateTime.Now;
         }
 
@@ -83,7 +88,7 @@ namespace Bacheca_Server
         {
             string msg = "";
             msg += "^|"+ Username + "|" + Board + "|" + Visibility.ToString() + "|" +
-                    Convert.ToString(Text.Length) + "|" +/*Tipo +*/ Date.ToString() + "|" + Text + "| *£*";
+                    Convert.ToString(Text.Length) + "|" +/*Tipo +*/ Date.ToString() + "|" + Text + "| **";
 
             byte[] output = Encoding.ASCII.GetBytes(msg);
             return output;
@@ -99,7 +104,7 @@ namespace Bacheca_Server
                 foreach (Item memo in MemoList)
                 {
                     Memos += memo.Username + "|" + memo.Board + "|" +
-                        memo.Visibility.ToString() + "|" + Convert.ToString(memo.Length) + "|" + memo.Date.ToString() + "|" + memo.Text + "| *£*"; ;
+                        memo.Visibility.ToString() + "|" + Convert.ToString(memo.Length) + "|" + memo.Date.ToString() + "|" + memo.Text + "| **"; ;
                 }
             }
 
@@ -107,11 +112,26 @@ namespace Bacheca_Server
 
             return Memos;
         }
+
+        public static Item Unpack(string packedMsg)
+        {
+            Item item = new Item();
+            string[] args = packedMsg.Split('|');
+           
+            item.username = args[1];
+            item.board_name = args[2];
+            item.visible = Convert.ToBoolean(args[3]);
+            item.length = Convert.ToInt32(args[4]);
+            item.fixed_date = DateTime.Parse(args[5]);
+            item.text = args[6];
+
+
+            return item;
+        }
     }
     public class BoardsManager
     {
         List<Board> BoardsList; 
-
         public BoardsManager() { BoardsList =  new List<Board>(); }
 
         public static bool Exists(string name)
@@ -126,9 +146,9 @@ namespace Bacheca_Server
 
             return exists;
         }
-        public void Open()
+        public Board OpenBoard(string name,string user)
         {
-
+            return BoardsList[GetBoard(name, user)];
         }
 
         public void CreateBoard(string name,string user, bool visible)
@@ -267,38 +287,47 @@ namespace Bacheca_Server
             BoardsManager = manager;
         }
             
-        public void ReceiveRequests()
+        public void ReceiveRequests(object Form)
         {
-            bool validReq = true;
-                
-                    while (request.IndexOf("++") == -1 && validReq && request.IndexOf("*£*") == -1)
+            Form1 Server = Form as Form1;
+            string request = "";
+            while(request != "-EXIT--")
+            {
+                bool validReq = true;
+
+                while (request.IndexOf("++") == -1 && validReq && request.IndexOf("**") == -1)
+                {
+                    int bytesRec = ManagerSocket.Receive(bytes);
+                    request += Encoding.ASCII.GetString(bytes, 0, bytesRec);
+                    if (request.Length > 0)
                     {
-                        int bytesRec = ManagerSocket.Receive(bytes);
-                        request += Encoding.ASCII.GetString(bytes, 0, bytesRec);
-                        if (request.Length > 0)
-                        {
-                            if (request[0] != '+' && request[0] != '^')
-                                validReq = false;
-                        }  
-                         else
+                        if (request[0] != '+' && request[0] != '^')
                             validReq = false;
                     }
-                    if (request.EndsWith("++"))
-                        Respond(request);
-                    else if (request.EndsWith("*&*"))
-                        ManageMemo(request);
-                        
-                    Console.Write("Messaggio ricevuto : {0}", request);
-                    request = "";
+                    else
+                        validReq = false;
+                }
+                if (request.EndsWith("++") && validReq)
+                    Respond(request,Server);
+                else if (request.EndsWith("**") && validReq)
+                    ManageMemo(request);
+
+                request = "";
+            }
+                Console.Write("Messaggio ricevuto : {0}", request);
                 
-            ManagerSocket.Shutdown(SocketShutdown.Both);
-            ManagerSocket.Close();
+
+            
+            //ManagerSocket.Shutdown(SocketShutdown.Both);
+            //ManagerSocket.Close();
         }
         private void ManageMemo(string request)
         {
-
+            Item memo = Item.Unpack(request);
+            Board board = BoardsManager.OpenBoard(memo.Board, memo.Username);
+            board.AddMemo(memo);
         }
-        private void Respond(string request)
+        private void Respond(string request, Form1 Server)
         {
             string res = "";
             string[] split = request.Split('|');
@@ -307,7 +336,7 @@ namespace Bacheca_Server
             {
                 case "DOWNLOAD++":
                     {
-
+                        res = BoardsManager.SendBoard(split[1], split[2]);
                     } break;
 
                 case "CHECK++":
@@ -320,6 +349,10 @@ namespace Bacheca_Server
                         // Crea la bacheca
                         string[] meta = request.Split("|");
                         BoardsManager.CreateBoard(meta[1],meta[2],Convert.ToBoolean(meta[3]));
+                        if (Server.Files.IsHandleCreated)
+                        {
+                            Server.Files.Invoke(new Action(() => Server.Files.Items.Add(meta[2])));
+                        }
                         res = "+|OK++";
 
                     } break;

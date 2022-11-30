@@ -18,10 +18,14 @@ namespace Bacheca_Server
     {
         public Server_Bacheca Server;
         public IPAddress IP = IPAddress.Parse("127.0.0.1");
+        private ListBox FileBoard;
+
+        public ListBox Files { set { FileBoard = value; } get { return FileBoard;  } }  
         public Form1()
         {
             
             InitializeComponent();
+            Files = BoardFiles;
             string path = Environment.CurrentDirectory;
             path = path.Substring(0, path.IndexOf("bin")) + "Boards";
 
@@ -30,8 +34,8 @@ namespace Bacheca_Server
                     BoardFiles.Items.Add(file);
 
             Server = new Server_Bacheca(IP,50000);
-            Thread ServerListening = new Thread(new ThreadStart(Server.Start));
-            ServerListening.Start();
+            Thread ServerListening = new Thread(new ParameterizedThreadStart(Server.Start));
+            ServerListening.Start(this);
             
         }
 
@@ -41,6 +45,11 @@ namespace Bacheca_Server
         }
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            
+        }
+
+        private void Form1_FormClosed(object sender, FormClosedEventArgs e)
         {
             Server.Stop();
         }

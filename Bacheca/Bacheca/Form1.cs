@@ -29,7 +29,7 @@ namespace Bacheca
 
             Show();
             Usr.Text = username;
-            BoardName = _boardname;
+            boardName.Text = _boardname;
             
             Client = client;
            
@@ -56,6 +56,7 @@ namespace Bacheca
 
             Item attivita = new Item();
             attivita.Text = TestoAttivita.Text;
+            attivita.Board = boardName.Text;
             attivita.Username = Usr.Text;
             attivita.Visibility = Public.Checked;
             
