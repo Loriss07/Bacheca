@@ -22,18 +22,38 @@ namespace Bacheca
         }
         private void btnLogin_Click(object sender, EventArgs e)
         {
-            try { 
+            Client_Bacheca Bacheca = new Client_Bacheca();
+            try {
+                bool validBoard = false;
                 IP = IPAddress.Parse(Ip.Text);
-                Client_Bacheca Bacheca = new Client_Bacheca();
                 Bacheca.Owner = this;
                 Bacheca.BoardName = BoardName.Text;
-                Bacheca.Run(IP, Usr.Text,ref Client);
+                Bacheca.Username = Usr.Text;
                 Client.Connect(IP, 50000);
-                MessageBox.Show(Client.ExistsBoard(BoardName.Text,Usr.Text));
-                Hide();
+                if (Client.ConnectedClient)
+                {
+                    validBoard = Client.ExistsBoard(BoardName.Text, Usr.Text);
+
+                    if (validBoard && Client.ConnectedClient)
+                    {
+                        Bacheca.Run(IP, Usr.Text, ref Client);
+                        Hide();
+                    }
+                    else if (!validBoard)
+                    {
+                        MessageBox.Show("La bacheca non esiste!");
+                        btnLogin.Enabled = false;
+                    }
+                }
+                    
             }
-            catch (FormatException fe) { 
-                MessageBox.Show("IP non valido");
+            catch (FormatException fe) { MessageBox.Show("IP non valido :/ "); }
+            
+            catch (System.Net.Sockets.SocketException se)
+            {
+                MessageBox.Show("Impossibile connettersi :( ");
+                Bacheca.Hide();
+                Show();
             }
 
             
@@ -41,27 +61,44 @@ namespace Bacheca
 
         private void Create_Click(object sender, EventArgs e)
         {
+            Client_Bacheca Bacheca = new Client_Bacheca();
             try
             {
+                bool validBoard = false;
                 IP = IPAddress.Parse(Ip.Text);
-                Client_Bacheca Bacheca = new Client_Bacheca();
                 Bacheca.Owner = this;
                 Bacheca.BoardName = BoardName.Text;
-                Bacheca.Run(IP, Usr.Text,ref Client);
                 Client.Connect(IP, 50000);
-                Client.CreateBoard(BoardName.Text, Usr.Text, PrivateBoard.Checked);
-                Hide();
+                if (Client.ConnectedClient)
+                {
+                    validBoard = Client.ExistsBoard(BoardName.Text, Usr.Text);
+
+                    if (!validBoard)
+                    {
+                        Bacheca.Run(IP, Usr.Text, ref Client);
+                        Client.CreateBoard(BoardName.Text, Usr.Text, PrivateBoard.Checked);
+                        Hide();
+                    }
+                    else
+                    {
+                        MessageBox.Show("La bacheca esiste già!");
+                        Create.Enabled = false;
+                    }
+                }
+
+
+
             }
-            catch (FormatException fe)
+            catch (FormatException fe) 
+                { MessageBox.Show("IP non valido :/ "); 
+            }
+            catch (System.Net.Sockets.SocketException se)
             {
-                MessageBox.Show("IP non valido");
+                MessageBox.Show("Impossibile connettersi :( ");
+                Bacheca.Hide();
+                Show(); 
             }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Errore. Tentativo di riconnessione");
-                Connetti();
-            }
-            
+
             
         }
         private void Connetti()
@@ -77,5 +114,6 @@ namespace Bacheca
             }
             
         }
+
     }
 }

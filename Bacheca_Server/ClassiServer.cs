@@ -16,11 +16,10 @@ namespace Bacheca_Server
         private EndPoint endPoint;
         private BoardsManager BoardsManager;
 
-        
-        public Server_Bacheca(IPAddress IP, int port)
+        public Server_Bacheca(IPAddress IP, int port,ref BoardsManager Manager)
         {
             socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            BoardsManager = new BoardsManager();
+            BoardsManager = Manager;
             endPoint = new IPEndPoint(IP, port);
         }
         public void Start(object Form)
@@ -50,16 +49,15 @@ namespace Bacheca_Server
         
         public void Stop()
         {
-            socket.Disconnect(false);
+            socket.Close();
             socket.Dispose();
-            
         }
 
     }
     public class Item
     {
-        private string username;
-        private string board_name;
+        private string uesrName;
+        private string boardName;
         private bool visible;
         private int length;
         private string text;
@@ -70,18 +68,18 @@ namespace Bacheca_Server
         public Item()
         {
             text = "";
-            board_name = "";
+            boardName = "";
             visible = false;
             length = 0;
 
             creation_time = DateTime.Now;
         }
 
-        public string Username { get { return username; } set { username = value; } }
+        public string Username { get { return uesrName; } set { uesrName = value; } }
         public string Text { get { return text; } set { text = value; } }
         public bool Visibility { get { return visible; } set { visible = value; } }
         public int Length { get { return length; } set { length = value; } }
-        public string Board { get { return board_name; } set { board_name = value; } }
+        public string Board { get { return boardName; } set { boardName = value; } }
         public DateTime Date { get { return fixed_date; } set { fixed_date = value; } }
 
         public byte[] Pack()
@@ -98,7 +96,7 @@ namespace Bacheca_Server
         /*Crea la lista di memo che poi viene usata dal client - è statico*/
         {
             string Memos = "";
-            if (MemoList.Count == 0)
+            if (MemoList.Count > 0)
             {
                 Memos = "^|";
                 foreach (Item memo in MemoList)
@@ -106,9 +104,12 @@ namespace Bacheca_Server
                     Memos += memo.Username + "|" + memo.Board + "|" +
                         memo.Visibility.ToString() + "|" + Convert.ToString(memo.Length) + "|" + memo.Date.ToString() + "|" + memo.Text + "| **"; ;
                 }
+                Memos += "%%";
             }
-
-
+            else
+            {
+                Memos = " %%";
+            }
 
             return Memos;
         }
@@ -118,8 +119,8 @@ namespace Bacheca_Server
             Item item = new Item();
             string[] args = packedMsg.Split('|');
            
-            item.username = args[1];
-            item.board_name = args[2];
+            item.uesrName = args[1];
+            item.boardName = args[2];
             item.visible = Convert.ToBoolean(args[3]);
             item.length = Convert.ToInt32(args[4]);
             item.fixed_date = DateTime.Parse(args[5]);
@@ -131,131 +132,161 @@ namespace Bacheca_Server
     }
     public class BoardsManager
     {
-        List<Board> BoardsList; 
-        public BoardsManager() { BoardsList =  new List<Board>(); }
+        private List<Board> BoardsList;
+        static string indexFile;
 
-        public static bool Exists(string name)
+        public List<Board> boardList { get { return BoardsList;  } set { } }
+        public BoardsManager() { 
+            BoardsList =  new List<Board>();
+            indexFile = Environment.CurrentDirectory;
+            indexFile = indexFile.Substring(0, indexFile.IndexOf("bin")) + "BoardManager\\Boards.json";
+            if (File.Exists(indexFile))
+            {
+                string boards = File.ReadAllText(indexFile);
+                BoardsList = JsonSerializer.Deserialize<List<Board>>(boards); ;
+            } else
+            {
+                FileStream fs = File.Create(indexFile);
+                fs.Write(Encoding.ASCII.GetBytes("[ ]"));
+                fs.Dispose();
+            }
+        }
+        public void UnloadBoards()
+        {
+            string boardFile = JsonSerializer.Serialize(BoardsList);
+            File.WriteAllText(indexFile, boardFile);
+            //memos.Clear();
+        }
+        public static bool Exists(string board_name)
         {
             bool exists = false;
             string path = Environment.CurrentDirectory;
             path = path.Substring(0, path.IndexOf("bin")) + "Boards";
             if (Directory.Exists(path))
                 foreach (string file in Directory.GetFiles(path))
-                    if (file.EndsWith(name + ".json"))
+                    if (file.EndsWith(board_name + ".json"))
                         exists = true;
 
             return exists;
         }
-        public Board OpenBoard(string name,string user)
+        public Board OpenBoard(string board_name,string board_user)
         {
-            return BoardsList[GetBoard(name, user)];
+            return BoardsList[GetBoard(board_name, board_user)];
         }
-
-        public void CreateBoard(string name,string user, bool visible)
+        public void CreateBoard(string board_name,string board_user, bool visible)
         {
-            BoardsList.Add(new Board(name,user,visible));
+            BoardsList.Add(new Board(board_name,board_user,visible));
+            UnloadBoards();
         }
-
-        public string SendBoard(string name, string user)
+        public string SendBoard(string board_name, string board_user)
         {
             string board;
-            if (GetBoard(name, user) >= 0)
+            if (GetBoard(board_name, board_user) >= 0 && BoardsList.Count > 0)
             {
-                Board ReqBoard = BoardsList[GetBoard(name, user)];
-                object m = JsonSerializer.Deserialize(ReqBoard.BoardPath, typeof(List<Item>));
+                Board ReqBoard = BoardsList[GetBoard(board_name, board_user)];
+                string memo = File.ReadAllText(ReqBoard.BoardPath);
+                object m = JsonSerializer.Deserialize(memo, typeof(List<Item>));
                 List<Item> list = m as List<Item>;
 
-                board = Item.Zip(list);
+                board = Item.Zip(list)+"|%%";
             }
             else
-                board = "";
+                board = " %%";
 
             return board;
         }
-
-        public int GetBoard(string name,string user)
+        public int GetBoard(string board_name,string board_user)
         {
             int index = -1;
             foreach (Board board in BoardsList)
             {
-                if (board.ID == HashCode(name,user))
+                if (IsEqual(board.ID,Board.GetID(board_name,board_user)))
                     index = BoardsList.IndexOf(board);
             }
             return index;
         }
-
-        public int HashCode(string name, string user)
+        private bool IsEqual(char[] a,char[] b)
         {
-            return (name[1] + name[2] + (name[0] * user[3])) % (name.Length + user.Length);
+            bool ok = true;
+            for (int i = 0; i < a.Length; i++)
+            {
+                if (a[i] != b[i])
+                    ok = false;
+            }
+            return ok;
         }
     }
     public class Board
     {
-        private string filename;
-        private string filepath;
-        private string name;
-        private string owner;
+        private string fileName;
+        private string filePath;
+        private string boardName;
+        private List<string> boardUsers;
         private List<Item> memos;
         private bool prvt;
         private DateTime creationTime;
-        private int id;
+        private char[] Id;
 
-        public string Name { get { return name; } set { name = value; } }
-        public string BoardPath { get { return filepath; } set { filepath = value; } }
-        public string Owner { get { return owner; } set { owner = value; } }
+        public string BoardName { get { return boardName; } set { boardName = value; } }
+        public string BoardPath { get { return filePath; } set { filePath = value; } }
+        public List<string> BoardOwner { get { return boardUsers; } set { boardUsers = value; } }
         public bool Private { get { return prvt; } set { prvt = value; } }
-        public int ID { get { return id; } set { id = value; } }
+        public char[] ID { get { return Id; } set { Id = value; } }
         public DateTime CreationTime { get { return creationTime; } set { creationTime = value; } }
         public Board()
         {
-            filepath = "";
-            name = "MyBoard";
+            filePath = "";
+            boardName = "MyBoard";
+            memos = new List<Item>();
         }
-        public Board(string name,string owner)
+        public Board(string name,string user)
         {
-            filepath = "";
-            this.name = name;
-            this.owner = owner;
-            
+            filePath = "";
+            boardName = name;
+            boardUsers.Add(user);
+
         }
 
         //Crea la bacheca
-        public Board(string name,string ownerUser,bool visible)
+        public Board(string name,string user,bool visible)
         {
-            
+            boardUsers = new List<string>();
             creationTime = DateTime.Now;
-            this.name = name;
-            owner = ownerUser;
-            filename = name + ".json";
-            filepath = Environment.CurrentDirectory;
-            filepath = filepath.Substring(0, filepath.IndexOf("bin")) + "Boards";
+            boardName = name;
+            boardUsers.Add(user);
+            fileName = name + user + ".json";
+            filePath = Environment.CurrentDirectory;
+            filePath = filePath.Substring(0, filePath.IndexOf("bin")) + "Boards";
             prvt = !visible;
-            if (!Directory.Exists(filepath))
-                Directory.CreateDirectory(filepath);
+            if (!Directory.Exists(filePath))
+                Directory.CreateDirectory(filePath);
 
-            filepath = Path.Combine(filepath, filename);
-            FileStream file = File.Create(filepath);
+            filePath = Path.Combine(filePath, fileName);
+            FileStream file = File.Create(filePath);
             file.Write(Encoding.ASCII.GetBytes("[ ]"));
-            id = GetHashCode();
+            file.Dispose();
+            Id = GenerateID(boardName,boardUsers[0]);
+            memos = new List<Item>();
         }
         
         public void Load()
             // Carica in memoria i promemoria
         {
-            memos = JsonSerializer.Deserialize(filepath,typeof(List<Item>)) as List<Item>;
+            memos = JsonSerializer.Deserialize(filePath,typeof(List<Item>)) as List<Item>;
         }
         public void Unload()
             // Scarica i promemoria dalla memoria
         {
             string memoFile = JsonSerializer.Serialize(memos);
-            File.WriteAllText(filepath, memoFile);
+            File.WriteAllText(filePath, memoFile);
             memos.Clear();
         }
         public void AddMemo(Item memo)
         {
             // Scrive il memo nel file json
+            
             memos.Add(memo);
-
+            Unload();
         }
 
         public void RemoveMemo(Item memo)
@@ -270,8 +301,26 @@ namespace Bacheca_Server
             
         }
 
-        public override int GetHashCode() { return (name[1] + name[2]) * (name[0] * owner[3]) % (name.Length + owner.Length); }
-
+        private char[] GenerateID(string boardname,string user)
+        {
+            Id = new char[5];
+            Id[0] = boardname[0];
+            Id[1] = boardname[1];
+            Id[2] = user[2];
+            Id[3] = user[3];
+            Id[4] = Convert.ToChar(boardname[0] + user[user.Length - 1]);
+            return Id;
+        }
+        public static char[] GetID(string boardname,string user)
+        {
+            char[] hash = new char[5];
+            hash[0] = boardname[0];
+            hash[1] = boardname[1];
+            hash[2] = user[2];
+            hash[3] = user[3];
+            hash[4] = Convert.ToChar(boardname[0] + user[user.Length - 1]);
+            return hash;
+        }
     }
 
     public class ClientManager
@@ -290,7 +339,7 @@ namespace Bacheca_Server
         public void ReceiveRequests(object Form)
         {
             Form1 Server = Form as Form1;
-            string request = "";
+            //string request = "";
             while(request != "-EXIT--")
             {
                 bool validReq = true;
@@ -313,13 +362,11 @@ namespace Bacheca_Server
                     ManageMemo(request);
 
                 request = "";
+                //Debug.Write("Messaggio ricevuto : {0}", request);
             }
-                Console.Write("Messaggio ricevuto : {0}", request);
                 
-
-            
-            //ManagerSocket.Shutdown(SocketShutdown.Both);
-            //ManagerSocket.Close();
+            ManagerSocket.Shutdown(SocketShutdown.Both);
+            ManagerSocket.Close();
         }
         private void ManageMemo(string request)
         {
@@ -330,32 +377,36 @@ namespace Bacheca_Server
         private void Respond(string request, Form1 Server)
         {
             string res = "";
-            string[] split = request.Split('|');
-            string reqType = split[split.Length - 1];
+            string[] packetData = request.Split('|');
+            string reqType = packetData[packetData.Length - 1];
             switch (reqType)
             {
                 case "DOWNLOAD++":
                     {
-                        res = BoardsManager.SendBoard(split[1], split[2]);
+                        if (BoardsManager.Exists(packetData[1]+packetData[2]))
+                            res =  BoardsManager.SendBoard(packetData[1], packetData[2]);
+                        else
+                            res = "+" + "NOT FOUND" + "++";
                     } break;
 
                 case "CHECK++":
                     {
-                        res = "+" + BoardsManager.Exists(request.Split("|")[2]) + "++";
+                        res = "+" + BoardsManager.Exists(request.Split("|")[1] + request.Split("|")[2]) + "++";
                         
                     } break;
                 case "CREATE++":
                     {
                         // Crea la bacheca
-                        string[] meta = request.Split("|");
-                        BoardsManager.CreateBoard(meta[1],meta[2],Convert.ToBoolean(meta[3]));
+                        
+                        BoardsManager.CreateBoard(packetData[1], packetData[2],Convert.ToBoolean(packetData[3]));
                         if (Server.Files.IsHandleCreated)
                         {
-                            Server.Files.Invoke(new Action(() => Server.Files.Items.Add(meta[2])));
+                            Server.Files.Invoke(new Action(() => Server.Files.Items.Add(packetData[1])));
                         }
-                        res = "+|OK++";
+                        res = "+|Bacheca Creata++";
 
                     } break;
+                
             }
             byte[] outbound = Encoding.ASCII.GetBytes(res);
             ManagerSocket.Send(outbound);

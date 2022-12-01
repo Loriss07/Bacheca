@@ -31,23 +31,27 @@ namespace Bacheca
             Usr.Text = username;
             boardName.Text = _boardname;
             
-            Client = client;
-           
+            if (client != null)
+                Client = client;
+
 
             //  Recupera gli oggetti dal server se presenti
-            
-              
+
+            PinMemo();
         }
         private void PinMemo()
         {
             //Mostra i promemoria
-            if (Client.ExistsBoard(boardName.Text, Usr.Text) == "+TRUE++")
-            {
-                foreach (Item i in Client.Download(_boardname, _usr))
+                foreach (Item memo in Client.Download(_boardname, _usr))
                 {
-
+                    Label label = new Label();
+                    label.Text = memo.Text;
+                    label.CreateControl();
+                    Board.Controls.Add(label);
+                    label.BackColor = Color.Gainsboro;
+                    label.ForeColor = Color.DodgerBlue;
+                    label.Show();
                 }
-            }
             
         }
         private void Send_Click(object sender, EventArgs e)
@@ -81,8 +85,12 @@ namespace Bacheca
 
         private void Client_Bacheca_FormClosed(object sender, FormClosedEventArgs e)
         {
-            
-            _form.Dispose();
+            if (Client != null)
+            {
+                Client.Disconnect();
+                _form.Dispose();
+            }
+                
         }
     }
     

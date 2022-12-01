@@ -16,24 +16,35 @@ namespace Bacheca_Server
 {
     public partial class Form1 : Form
     {
-        public Server_Bacheca Server;
-        public IPAddress IP = IPAddress.Parse("127.0.0.1");
+        private Server_Bacheca Server;
+        private IPAddress IP = IPAddress.Parse("127.0.0.1");
         private ListBox FileBoard;
-
+        private BoardsManager BoardsManager;
         public ListBox Files { set { FileBoard = value; } get { return FileBoard;  } }  
         public Form1()
         {
             
             InitializeComponent();
+            BoardsManager = new BoardsManager();
             Files = BoardFiles;
-            string path = Environment.CurrentDirectory;
-            path = path.Substring(0, path.IndexOf("bin")) + "Boards";
+            /*string path = Environment.CurrentDirectory;
+            path = path.Substring(0, path.IndexOf("bin")) + "Boards";*/
 
-            if (Directory.Exists(path))
+            foreach (Board board in BoardsManager.boardList)
+            {
+                BoardFiles.Items.Add(board);
+            }
+
+            /*if (Directory.Exists(path))
                 foreach (string file in Directory.GetFiles(path))
-                    BoardFiles.Items.Add(file);
+                {
+                    string format = file.Remove(0, file.LastIndexOf("\\") + 1);
+                    format = format.Substring(0, format.IndexOf(".json"));
+                    BoardFiles.Items.Add(format);
 
-            Server = new Server_Bacheca(IP,50000);
+                }*/
+
+            Server = new Server_Bacheca(IP,50000,ref BoardsManager);
             Thread ServerListening = new Thread(new ParameterizedThreadStart(Server.Start));
             ServerListening.Start(this);
             

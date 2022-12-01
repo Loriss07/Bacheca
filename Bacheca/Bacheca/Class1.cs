@@ -44,21 +44,27 @@ namespace Bacheca
         /*Crea la lista di memo che poi viene usata dal client - è statico*/
         {
             List<Item> Memolist = new List<Item>();
-            if (msg.Length > 1)
+            if (msg.Length > 6)
             {
                 
-                char[] delim = "*£*".ToCharArray();
+                char[] delim = "**".ToCharArray();
                 string[] Memos = msg.Split(delim);  //Separa i messaggi
                 foreach (string memo in Memos)
                 {
-                    string[] memo_comp = memo.Substring(2, memo.Length - 1).Split('|');
-                    Item m = new Item();
-                    m.Username = memo_comp[0];
-                    m.Board = memo_comp[1];
-                    m.Visibility = Convert.ToBoolean(memo_comp[2]);
-                    m.Length = Convert.ToInt32(memo_comp[3]);
-                    m.Date = DateTime.Parse(memo_comp[4]);
-                    m.Text = memo_comp[5];
+                    if (memo != "%%|%%" && memo != "")
+                    {
+                        string mo = memo.Remove(0, 2);
+                        string[] memo_comp = mo.Split('|');
+                        Item m = new Item();
+                        m.Username = memo_comp[0];
+                        m.Board = memo_comp[1];
+                        m.Visibility = Convert.ToBoolean(memo_comp[2]);
+                        m.Length = Convert.ToInt32(memo_comp[3]);
+                        m.Date = DateTime.Parse(memo_comp[4]);
+                        m.Text = memo_comp[5];
+                        Memolist.Add(m);
+                    }
+                    
                 }
             }
             return Memolist;
@@ -70,6 +76,8 @@ namespace Bacheca
         private Socket socket;
         private List<Item> Memos;   //La lista che salva i promemoria
 
+
+        public bool ConnectedClient {  get { return socket.Connected; } }
         public ClientSide() { 
             socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             Memos = new List<Item>();
@@ -84,10 +92,22 @@ namespace Bacheca
             }
             catch (SocketException se)
             {
-                throw new SocketException();
+                socket.Close();
+                socket.Dispose();
+                socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                //throw new SocketException();
+                EndPoint Server = new IPEndPoint(serverIp, Port);
+                socket.Connect(Server);
+
             }
         }
-
+        public void Disconnect()
+        {
+            string closingMsg = "-EXIT--";
+            byte[] quit = Encoding.ASCII.GetBytes(closingMsg);  
+            socket.Send(quit);
+            
+        }
         public List<Item> Download(string boardname, string user)
         /*Recupera i promemoria dal server e li mostra sul client*/
         {
@@ -95,19 +115,24 @@ namespace Bacheca
             string memo_string = "";
             int res_bytes;
             Request(boardname,user);
-            res_bytes = socket.Receive(res);
-            memo_string = Encoding.ASCII.GetString(res,0,res_bytes);
 
-            List<Item> list = Item.Unzip(memo_string);
+            while (memo_string.IndexOf("%%") == -1)
+            {
+                res_bytes = socket.Receive(res);
+                memo_string = Encoding.ASCII.GetString(res, 0, res_bytes);
+            }
+            List<Item> list = new List<Item>();
+            if (memo_string != "NOT FOUND")
+             list = Item.Unzip(memo_string);
 
             return list;
         }
         
         private void Request(string boardname,string user)
-        /* Richiede al server i messaggi salvati sulla bacheca */
+        /* Richiede al server di inviare la bacheca */
         {
             string data = "";
-            string msg = "+|" + user + "|" + boardname + "|DOWNLOAD++";
+            string msg = "+|" + boardname + "|" + user + "|DOWNLOAD++";
             byte[] req = Encoding.ASCII.GetBytes(msg);
             socket.Send(req);
 
@@ -127,10 +152,10 @@ namespace Bacheca
             Memos.Add(memo);
         }
 
-        public string ExistsBoard(string boardname,string user)
+        public bool ExistsBoard(string boardname,string user)
         {
-            //bool exists = false;
-            string msg = "+|" + user + "|" + boardname + "|CHECK++";
+            bool exists; 
+            string msg = "+|" + boardname + "|" + user + "|CHECK++";
             byte[] outboundReq = Encoding.ASCII.GetBytes(msg);
 
             socket.Send(outboundReq);
@@ -142,19 +167,21 @@ namespace Bacheca
                 bytesRes = socket.Receive(inboundRes);
                 inbound += Encoding.ASCII.GetString(inboundRes, 0, bytesRes);
             }
+            inbound = inbound.Replace("+", "");
+            exists = Convert.ToBoolean(inbound);
 
-            return inbound;
+            return exists;
         }
 
         public void CreateBoard(string boardname, string user, bool visible)
             /* Richiede la creazione di una bacheca */
         {
-            string msg = "+|" + user + "|" + boardname + "|" + visible +"|CREATE++";
+            string msg = "+|" + boardname + "|" + user + "|" + visible +"|CREATE++";
             byte[] req = Encoding.ASCII.GetBytes(msg);
             socket.Send(req);
             string inbound = "";
             byte[] inboundRes = new byte[1024];
-            int bytesRes = 0;
+            int bytesRes;
             while (inbound.IndexOf("++") == -1)
             {
                 bytesRes = socket.Receive(inboundRes);
