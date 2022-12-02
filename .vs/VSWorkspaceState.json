@@ -1,7 +1,10 @@
 {
   "ExpandedNodes": [
-    ""
+    "",
+    "\\Bacheca",
+    "\\Bacheca\\Bacheca",
+    "\\Bacheca_Server"
   ],
-  "SelectedNode": "\\Bacheca.sln",
+  "SelectedNode": "\\Bacheca\\Bacheca\\Bacheca.sln",
   "PreviewInSolutionExplorer": false
 }

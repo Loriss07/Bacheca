@@ -17,11 +17,13 @@ namespace Bacheca
         private string text;
         private DateTime creation_time;
         private DateTime fixed_date;
+        private char[] MemoId;
 
         public Item()
         {
             text = "";
             creation_time = DateTime.Now;
+            MemoId = new char[3];
         }
         public string Username { get { return username; } set { username = value; } }
         public string Text { get { return text; } set { text = value; } }
@@ -32,8 +34,11 @@ namespace Bacheca
         public DateTime Date { get { return fixed_date; } set { fixed_date = value; } }
         public byte[] Pack()
         {
+            MemoId[0] = Text[0];
+            MemoId[1] = Convert.ToChar(creation_time.Second);
+            MemoId[2] = Board[1];
             string msg = "";
-                msg += "^|" + Username + "|" + Board + "|" + Visibility.ToString() + "|" +  
+                msg += "^|" + Username + "|" + Board + "|" + Visibility.ToString() + "|" + Convert.ToString(MemoId) + "|" + 
                         Convert.ToString(Text.Length) + "|" + Date.ToString() + "|" + Text + "| **";
 
             byte[] output = Encoding.ASCII.GetBytes(msg);
@@ -44,8 +49,7 @@ namespace Bacheca
         /*Crea la lista di memo che poi viene usata dal client - è statico*/
         {
             List<Item> Memolist = new List<Item>();
-            if (msg.Length > 6)
-            {
+            
                 
                 char[] delim = "**".ToCharArray();
                 string[] Memos = msg.Split(delim);  //Separa i messaggi
@@ -66,7 +70,7 @@ namespace Bacheca
                     }
                     
                 }
-            }
+            
             return Memolist;
         }
     }
@@ -122,7 +126,7 @@ namespace Bacheca
                 memo_string = Encoding.ASCII.GetString(res, 0, res_bytes);
             }
             List<Item> list = new List<Item>();
-            if (memo_string != "NOT FOUND")
+            if (memo_string != "%NOT FOUND%%")
              list = Item.Unzip(memo_string);
 
             return list;

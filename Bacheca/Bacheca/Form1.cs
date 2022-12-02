@@ -19,6 +19,7 @@ namespace Bacheca
         private IPAddress _IP;
         private ClientSide Client;
         private Login _form;
+        private Point MouseDownLocation;
 
         public string Username { set { _usr = value; } get { return _usr; } }
         public string BoardName { set { _boardname = value; } get { return _boardname; } }
@@ -55,7 +56,32 @@ namespace Bacheca
             label.Font = new Font("Arial", 14, FontStyle.Bold);
             label.Location = new Point(rand.Next(Board.Size.Width) - label.Width, rand.Next(Board.Size.Height) - label.Height);
             label.TextAlign = ContentAlignment.MiddleCenter;
+            label.Click += Memo_Click;
+            label.MouseDown += Memo_MouseDown;
+            label.MouseMove += Memo_MouseMove;
             label.Show();
+        }
+        private void Memo_Click(object sender, EventArgs e)
+        {
+            Label memo = sender as Label;
+            memo.Select();
+            
+        }
+        private void Memo_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button == System.Windows.Forms.MouseButtons.Left)
+            {
+                MouseDownLocation = e.Location;
+            }
+        }
+        private void Memo_MouseMove(object sender, MouseEventArgs e)
+        {
+            Label a = sender as Label;
+            if (e.Button == MouseButtons.Left)
+            {
+                a.Left = e.X + a.Left - MouseDownLocation.X;
+                a.Top = e.Y + a.Top - MouseDownLocation.Y;
+            }
                 
             
         }
@@ -68,8 +94,11 @@ namespace Bacheca
             attivita.Board = boardName.Text;
             attivita.Username = Usr.Text;
             attivita.Visibility = Public.Checked;
+            attivita.CDate = DateTime.Now;
+            attivita.Date = DateSave.Value;
             PinMemo(attivita);
             Client.Send(attivita);
+            TestoAttivita.Text = "";
         }
 
 
@@ -96,6 +125,7 @@ namespace Bacheca
             }
                 
         }
+
     }
     
    

@@ -32,7 +32,7 @@ namespace Bacheca
             this.TestoAttivita = new System.Windows.Forms.TextBox();
             this.Send = new System.Windows.Forms.Button();
             this.Public = new System.Windows.Forms.CheckBox();
-            this.dateTimePicker1 = new System.Windows.Forms.DateTimePicker();
+            this.DateSave = new System.Windows.Forms.DateTimePicker();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.Usr = new System.Windows.Forms.Label();
             this.Board = new System.Windows.Forms.Panel();
@@ -48,15 +48,15 @@ namespace Bacheca
             this.TestoAttivita.Margin = new System.Windows.Forms.Padding(4);
             this.TestoAttivita.Multiline = true;
             this.TestoAttivita.Name = "TestoAttivita";
-            this.TestoAttivita.Size = new System.Drawing.Size(704, 133);
+            this.TestoAttivita.Size = new System.Drawing.Size(578, 133);
             this.TestoAttivita.TabIndex = 0;
             // 
             // Send
             // 
-            this.Send.Location = new System.Drawing.Point(1057, 511);
+            this.Send.Location = new System.Drawing.Point(930, 501);
             this.Send.Margin = new System.Windows.Forms.Padding(4);
             this.Send.Name = "Send";
-            this.Send.Size = new System.Drawing.Size(77, 28);
+            this.Send.Size = new System.Drawing.Size(110, 41);
             this.Send.TabIndex = 1;
             this.Send.Text = "Salva";
             this.Send.UseVisualStyleBackColor = true;
@@ -73,13 +73,13 @@ namespace Bacheca
             this.Public.Text = "Pubblico";
             this.Public.UseVisualStyleBackColor = true;
             // 
-            // dateTimePicker1
+            // DateSave
             // 
-            this.dateTimePicker1.Location = new System.Drawing.Point(13, 392);
-            this.dateTimePicker1.Margin = new System.Windows.Forms.Padding(4);
-            this.dateTimePicker1.Name = "dateTimePicker1";
-            this.dateTimePicker1.Size = new System.Drawing.Size(204, 22);
-            this.dateTimePicker1.TabIndex = 4;
+            this.DateSave.Location = new System.Drawing.Point(930, 405);
+            this.DateSave.Margin = new System.Windows.Forms.Padding(4);
+            this.DateSave.Name = "DateSave";
+            this.DateSave.Size = new System.Drawing.Size(204, 22);
+            this.DateSave.TabIndex = 4;
             // 
             // pictureBox1
             // 
@@ -148,7 +148,7 @@ namespace Bacheca
             this.Controls.Add(this.Board);
             this.Controls.Add(this.Usr);
             this.Controls.Add(this.pictureBox1);
-            this.Controls.Add(this.dateTimePicker1);
+            this.Controls.Add(this.DateSave);
             this.Controls.Add(this.Public);
             this.Controls.Add(this.Send);
             this.Controls.Add(this.TestoAttivita);
@@ -168,7 +168,7 @@ namespace Bacheca
         private System.Windows.Forms.TextBox TestoAttivita;
         private System.Windows.Forms.Button Send;
         private System.Windows.Forms.CheckBox Public;
-        private System.Windows.Forms.DateTimePicker dateTimePicker1;
+        private System.Windows.Forms.DateTimePicker DateSave;
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.Label Usr;
         private System.Windows.Forms.Panel Board;

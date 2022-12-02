@@ -358,7 +358,8 @@ namespace Bacheca_Server
                 else if (request.EndsWith("**") && validReq)
                     ManageMemo(request);
 
-                request = "";
+                if (request != "-EXIT--")
+                    request = "";
                 //Debug.Write("Messaggio ricevuto : {0}", request);
             }
                 
@@ -383,7 +384,7 @@ namespace Bacheca_Server
                         if (BoardsManager.Exists(packetData[1]+packetData[2]))
                             res =  BoardsManager.SendBoard(packetData[1], packetData[2]);
                         else
-                            res = "+" + "NOT FOUND" + "++";
+                            res = "%" + "NOT FOUND" + "%%";
                     } break;
 
                 case "CHECK++":

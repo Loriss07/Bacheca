@@ -75,8 +75,8 @@ namespace Bacheca
 
                     if (!validBoard)
                     {
-                        Bacheca.Run(IP, Usr.Text, ref Client);
                         Client.CreateBoard(BoardName.Text, Usr.Text, PrivateBoard.Checked);
+                        Bacheca.Run(IP, Usr.Text, ref Client);
                         Hide();
                     }
                     else
