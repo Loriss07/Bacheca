@@ -52,12 +52,13 @@ namespace Bacheca_Server
             this.button1.TabIndex = 1;
             this.button1.Text = "Chiudi server";
             this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(463, 440);
+            this.ClientSize = new System.Drawing.Size(442, 440);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.BoardFiles);
             this.Name = "Form1";

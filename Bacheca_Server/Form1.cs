@@ -27,22 +27,10 @@ namespace Bacheca_Server
             InitializeComponent();
             BoardsManager = new BoardsManager();
             Files = BoardFiles;
-            /*string path = Environment.CurrentDirectory;
-            path = path.Substring(0, path.IndexOf("bin")) + "Boards";*/
-
             foreach (Board board in BoardsManager.boardList)
             {
-                BoardFiles.Items.Add(board);
+                BoardFiles.Items.Add(board.BoardName);
             }
-
-            /*if (Directory.Exists(path))
-                foreach (string file in Directory.GetFiles(path))
-                {
-                    string format = file.Remove(0, file.LastIndexOf("\\") + 1);
-                    format = format.Substring(0, format.IndexOf(".json"));
-                    BoardFiles.Items.Add(format);
-
-                }*/
 
             Server = new Server_Bacheca(IP,50000,ref BoardsManager);
             Thread ServerListening = new Thread(new ParameterizedThreadStart(Server.Start));
@@ -63,6 +51,12 @@ namespace Bacheca_Server
         private void Form1_FormClosed(object sender, FormClosedEventArgs e)
         {
             Server.Stop();
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            Server.Stop();
+            Close();
         }
     }
 }

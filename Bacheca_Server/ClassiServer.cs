@@ -49,6 +49,7 @@ namespace Bacheca_Server
         
         public void Stop()
         {
+    
             socket.Close();
             socket.Dispose();
         }
@@ -149,8 +150,7 @@ namespace Bacheca_Server
             indexFile = indexFile.Substring(0, indexFile.IndexOf("bin")) + "BoardManager\\Boards.json";
             if (File.Exists(indexFile))
             {
-                string boards = File.ReadAllText(indexFile);
-                BoardsList = JsonSerializer.Deserialize<List<Board>>(boards); ;
+                LoadBoards() ;
             } else
             {
                 FileStream fs = File.Create(indexFile);
@@ -158,11 +158,17 @@ namespace Bacheca_Server
                 fs.Dispose();
             }
         }
+        public void LoadBoards()
+        {
+            string boards = File.ReadAllText(indexFile);
+            BoardsList = JsonSerializer.Deserialize(boards, typeof(List<Board>)) as List<Board>;
+            
+        }
         public void UnloadBoards()
         {
             string boardFile = JsonSerializer.Serialize(BoardsList);
             File.WriteAllText(indexFile, boardFile);
-            //memos.Clear();
+            BoardsList.Clear();
         }
         public static bool Exists(string board_name)
         {
@@ -182,8 +188,9 @@ namespace Bacheca_Server
         }
         public void CreateBoard(string board_name,string board_user, bool visible)
         {
+            LoadBoards();
             BoardsList.Add(new Board(board_name,board_user,visible));
-            UnloadBoards();
+            //UnloadBoards();
         }
         public string SendBoard(string board_name, string board_user)
         {
@@ -214,6 +221,7 @@ namespace Bacheca_Server
         }
         public void RemoveBoard(string boardID)
         {
+            LoadBoards();
             bool found = false;
             int i = 0;
             while (!found && i < BoardsList.Count)
@@ -227,6 +235,8 @@ namespace Bacheca_Server
                 BoardsList.Remove(BoardsList[i]);
                 JsonSerializer.Serialize(BoardsList, typeof(List<Item>));
             }
+            UnloadBoards();
+            LoadBoards();
         }
         private bool IsEqual(char[] a,char[] b)
         {
@@ -304,7 +314,7 @@ namespace Bacheca_Server
         {
             string memoFile = JsonSerializer.Serialize(memos);
             File.WriteAllText(filePath, memoFile);
-            //memos.Clear();
+            memos.Clear();
         }
         public void AddMemo(Item memo)
         {
@@ -336,7 +346,7 @@ namespace Bacheca_Server
                 memos.Remove(memos[i - 1]);
                 JsonSerializer.Serialize(memos, typeof(List<Item>));
             }
-            
+            Unload();
             
         }
         private char[] GenerateID(string boardname,string user)
@@ -440,16 +450,18 @@ namespace Bacheca_Server
                         {
                             Server.Files.Invoke(new Action(() => Server.Files.Items.Add(packetData[1])));
                         }
-                        res = "+|Bacheca Creata++";
+                        res = "+|OK++";
 
                     } break;
                 case "REMOVE++":
                     {
-                        BoardsManager.OpenBoard(packetData[1], packetData[2]).RemoveMemo(packetData[3]);  
+                        BoardsManager.OpenBoard(packetData[1], packetData[2]).RemoveMemo(packetData[3]);
+                        res = "+|OK++";
                     } break;
                 case "DELETE++":
                     {
                         BoardsManager.RemoveBoard(packetData[1]);
+                        res = "+|OK++";
                     }
                     break;
             }

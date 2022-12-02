@@ -131,9 +131,13 @@ namespace Bacheca
         }
         public void Disconnect()
         {
-            string closingMsg = "-EXIT--";
-            byte[] quit = Encoding.ASCII.GetBytes(closingMsg);  
-            socket.Send(quit);
+            if (socket.Connected)
+            {
+                string closingMsg = "-EXIT--";
+                byte[] quit = Encoding.ASCII.GetBytes(closingMsg);
+                socket.Send(quit);
+            }
+            
             
         }
         public List<Item> Download(string boardname, string user)
@@ -159,19 +163,25 @@ namespace Bacheca
         private void Request(string boardname,string user)
         /* Richiede al server di inviare la bacheca */
         {
-            string data = "";
-            string msg = "+|" + boardname + "|" + user + "|DOWNLOAD++";
-            byte[] req = Encoding.ASCII.GetBytes(msg);
-            socket.Send(req);
-
+            if (socket.Connected)
+            {
+                string msg = "+|" + boardname + "|" + user + "|DOWNLOAD++";
+                byte[] req = Encoding.ASCII.GetBytes(msg);
+                socket.Send(req);
+            }
+          
         }
 
         public void Send(Item memo)
         /*Manda un promemoria al server*/
         { 
-            byte[] packet = memo.Pack();
-            Add(memo);
-            socket.Send(packet);
+            if (socket.Connected)
+            {
+                byte[] packet = memo.Pack();
+                Add(memo);
+                socket.Send(packet);
+            }
+            
         }
 
         private void Add(Item memo)
@@ -180,54 +190,85 @@ namespace Bacheca
 
         public void Remove(Item memo)
         {
+            
             string msg = "+|" + memo.Board + "|" + memo.Username + "|" + memo.MemoID + "|REMOVE++";
             byte[] packet = Encoding.ASCII.GetBytes(msg);
             socket.Send(packet);
-                Memos.Remove(memo);
+            Memos.Remove(memo);
+            string res = "";
+            int res_bytes;
+            byte[] inbound = new byte[1024];
+            while (res.IndexOf("++") == -1)
+            {
+                res_bytes = socket.Receive(inbound);
+                res = Encoding.ASCII.GetString(inbound, 0, res_bytes);
+            }
+
         }
         public void Delete(string ID)
         {
-            string msg = "+|" + ID + "|DELETE++";
-            byte[] packet = Encoding.ASCII.GetBytes(msg);
-            socket.Send(packet);
+            if (socket.Connected)
+            {
+                string msg = "+|" + ID + "|DELETE++";
+                byte[] packet = Encoding.ASCII.GetBytes(msg);
+                socket.Send(packet);
+                string res = "";
+                int res_bytes;
+                byte[] inbound = new byte[1024];
+                while (res.IndexOf("++") == -1)
+                {
+                    res_bytes = socket.Receive(inbound);
+                    res = Encoding.ASCII.GetString(inbound, 0, res_bytes);
+                }
+            }
+            
         }
 
         public bool ExistsBoard(string boardname,string user)
         /* Richede se la bacheca inserita in input esiste */
         {
-            bool exists; 
-            string msg = "+|" + boardname + "|" + user + "|CHECK++";
-            byte[] outboundReq = Encoding.ASCII.GetBytes(msg);
-
-            socket.Send(outboundReq);
-            string inbound = "";
-            byte[] inboundRes = new byte[1024];
-            int bytesRes = 0;
-            while (inbound.IndexOf("++") == -1)
+            bool exists = false;
+            if (socket.Connected)
             {
-                bytesRes = socket.Receive(inboundRes);
-                inbound += Encoding.ASCII.GetString(inboundRes, 0, bytesRes);
-            }
-            inbound = inbound.Replace("+", "");
-            exists = Convert.ToBoolean(inbound);
+                
+                string msg = "+|" + boardname + "|" + user + "|CHECK++";
+                byte[] outboundReq = Encoding.ASCII.GetBytes(msg);
 
+                socket.Send(outboundReq);
+                string inbound = "";
+                byte[] inboundRes = new byte[1024];
+                int bytesRes = 0;
+                while (inbound.IndexOf("++") == -1)
+                {
+                    bytesRes = socket.Receive(inboundRes);
+                    inbound += Encoding.ASCII.GetString(inboundRes, 0, bytesRes);
+                }
+                inbound = inbound.Replace("+", "");
+                exists = Convert.ToBoolean(inbound);
+
+                
+            }
             return exists;
         }
 
         public void CreateBoard(string boardname, string user, bool visible)
         /* Richiede la creazione di una bacheca */
         {
-            string msg = "+|" + boardname + "|" + user + "|" + visible +"|CREATE++";
-            byte[] req = Encoding.ASCII.GetBytes(msg);
-            socket.Send(req);
-            string inbound = "";
-            byte[] inboundRes = new byte[1024];
-            int bytesRes;
-            while (inbound.IndexOf("++") == -1)
+            if (socket.Connected)
             {
-                bytesRes = socket.Receive(inboundRes);
-                inbound += Encoding.ASCII.GetString(inboundRes, 0, bytesRes);
+                string msg = "+|" + boardname + "|" + user + "|" + visible + "|CREATE++";
+                byte[] req = Encoding.ASCII.GetBytes(msg);
+                socket.Send(req);
+                string inbound = "";
+                byte[] inboundRes = new byte[1024];
+                int bytesRes;
+                while (inbound.IndexOf("++") == -1)
+                {
+                    bytesRes = socket.Receive(inboundRes);
+                    inbound += Encoding.ASCII.GetString(inboundRes, 0, bytesRes);
+                }
             }
+            
         }
 
         
