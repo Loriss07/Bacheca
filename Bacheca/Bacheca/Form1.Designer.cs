@@ -37,8 +37,8 @@ namespace Bacheca
             this.Usr = new System.Windows.Forms.Label();
             this.Board = new System.Windows.Forms.Panel();
             this.boardName = new System.Windows.Forms.Label();
-            this.EditMemo = new System.Windows.Forms.Button();
             this.DeleteMemo = new System.Windows.Forms.Button();
+            this.DeleteBoard = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -119,31 +119,35 @@ namespace Bacheca
             this.boardName.TabIndex = 10;
             this.boardName.Text = "Board";
             // 
-            // EditMemo
-            // 
-            this.EditMemo.Location = new System.Drawing.Point(16, 487);
-            this.EditMemo.Name = "EditMemo";
-            this.EditMemo.Size = new System.Drawing.Size(201, 23);
-            this.EditMemo.TabIndex = 11;
-            this.EditMemo.Text = "Modifica promemoria";
-            this.EditMemo.UseVisualStyleBackColor = true;
-            // 
             // DeleteMemo
             // 
-            this.DeleteMemo.Location = new System.Drawing.Point(16, 519);
+            this.DeleteMemo.Enabled = false;
+            this.DeleteMemo.Location = new System.Drawing.Point(12, 488);
             this.DeleteMemo.Name = "DeleteMemo";
             this.DeleteMemo.Size = new System.Drawing.Size(201, 23);
             this.DeleteMemo.TabIndex = 12;
             this.DeleteMemo.Text = "Elimina promemoria";
             this.DeleteMemo.UseVisualStyleBackColor = true;
+            this.DeleteMemo.Click += new System.EventHandler(this.DeleteMemo_Click);
+            // 
+            // DeleteBoard
+            // 
+            this.DeleteBoard.Enabled = false;
+            this.DeleteBoard.Location = new System.Drawing.Point(12, 519);
+            this.DeleteBoard.Name = "DeleteBoard";
+            this.DeleteBoard.Size = new System.Drawing.Size(201, 23);
+            this.DeleteBoard.TabIndex = 13;
+            this.DeleteBoard.Text = "Elimina bacheca";
+            this.DeleteBoard.UseVisualStyleBackColor = true;
+            this.DeleteBoard.Click += new System.EventHandler(this.button1_Click);
             // 
             // Client_Bacheca
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1173, 554);
+            this.Controls.Add(this.DeleteBoard);
             this.Controls.Add(this.DeleteMemo);
-            this.Controls.Add(this.EditMemo);
             this.Controls.Add(this.boardName);
             this.Controls.Add(this.Board);
             this.Controls.Add(this.Usr);
@@ -173,8 +177,8 @@ namespace Bacheca
         private System.Windows.Forms.Label Usr;
         private System.Windows.Forms.Panel Board;
         private System.Windows.Forms.Label boardName;
-        private System.Windows.Forms.Button EditMemo;
         private System.Windows.Forms.Button DeleteMemo;
+        private System.Windows.Forms.Button DeleteBoard;
     }
 }
 

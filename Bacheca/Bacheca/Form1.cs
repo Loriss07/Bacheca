@@ -20,6 +20,8 @@ namespace Bacheca
         private ClientSide Client;
         private Login _form;
         private Point MouseDownLocation;
+        private Label SelectedLabel;
+        private List<Item> _items;
 
         public string Username { set { _usr = value; } get { return _usr; } }
         public string BoardName { set { _boardname = value; } get { return _boardname; } }
@@ -37,7 +39,8 @@ namespace Bacheca
 
 
             //  Recupera gli oggetti dal server se presenti
-            foreach (Item memo in Client.Download(_boardname, _usr))
+            _items = Client.Download(_boardname, _usr);
+            foreach (Item memo in _items)
                 PinMemo(memo);
 
             
@@ -47,10 +50,10 @@ namespace Bacheca
             //Mostra i promemoria
             Random rand = new Random();
             Label label = new Label();
+            label.Name = memo.MemoID;
             label.Text = memo.Text;
+            label.Padding = new Padding(4, 4, 4, 4);
             label.AutoSize = true;
-            label.CreateControl();
-            Board.Controls.Add(label);
             label.BackColor = Color.Gainsboro;
             label.ForeColor = Color.DodgerBlue;
             label.Font = new Font("Arial", 14, FontStyle.Bold);
@@ -59,17 +62,23 @@ namespace Bacheca
             label.Click += Memo_Click;
             label.MouseDown += Memo_MouseDown;
             label.MouseMove += Memo_MouseMove;
+            label.CreateControl();
+            Board.Controls.Add(label);
             label.Show();
+        }
+        private void CancelMemo(Label l)
+        {
+            l.Dispose();
         }
         private void Memo_Click(object sender, EventArgs e)
         {
             Label memo = sender as Label;
-            memo.Select();
-            
+            DeleteMemo.Enabled = true;
+            SelectedLabel = memo;
         }
         private void Memo_MouseDown(object sender, MouseEventArgs e)
         {
-            if (e.Button == System.Windows.Forms.MouseButtons.Left)
+            if (e.Button == MouseButtons.Left)
             {
                 MouseDownLocation = e.Location;
             }
@@ -126,6 +135,34 @@ namespace Bacheca
                 
         }
 
+        private void DeleteMemo_Click(object sender, EventArgs e)
+        {
+            string memo_id = SelectedLabel.Name;
+            bool found = false;
+            int i = 0;
+            while (!found && i < _items.Count)
+            {
+                if (_items[i].MemoID == memo_id)
+                    found = true;
+                i++;
+            }
+            if (i > -1)
+            {
+                Client.Remove(_items[i - 1]);
+                _items.RemoveAt(i - 1);
+            }
+
+            foreach (Label label in Board.Controls)
+            {
+                CancelMemo(label);
+            }
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            Client.Delete(BoardName);
+
+        }
     }
     
    

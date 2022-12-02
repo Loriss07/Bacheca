@@ -56,14 +56,15 @@ namespace Bacheca_Server
     }
     public class Item
     {
-        private string uesrName;
+        private string userName;
         private string boardName;
         private bool visible;
         private int length;
         private string text;
         private DateTime creation_time;
         private DateTime fixed_date;
-        private int id;
+        private char[] MemoId;
+        private string id;
 
         public Item()
         {
@@ -75,21 +76,25 @@ namespace Bacheca_Server
             creation_time = DateTime.Now;
         }
 
-        public string Username { get { return uesrName; } set { uesrName = value; } }
+        public string Username { get { return userName; } set { userName = value; } }
         public string Text { get { return text; } set { text = value; } }
         public bool Visibility { get { return visible; } set { visible = value; } }
         public int Length { get { return length; } set { length = value; } }
         public string Board { get { return boardName; } set { boardName = value; } }
         public DateTime Date { get { return fixed_date; } set { fixed_date = value; } }
-
-        public byte[] Pack()
+        public char[] MemoID
         {
-            string msg = "";
-            msg += "^|"+ Username + "|" + Board + "|" + Visibility.ToString() + "|" +
-                    Convert.ToString(Text.Length) + "|" +/*Tipo +*/ Date.ToString() + "|" + Text + "| **";
-
-            byte[] output = Encoding.ASCII.GetBytes(msg);
-            return output;
+            get
+            {
+                string id = "";
+                for (int i = 0; i < MemoId.Length; i++)
+                    id += MemoId[i];
+                return MemoId;
+            }
+            set
+            {
+                MemoId = value;
+            }
         }
 
         public static string Zip(List<Item> MemoList)
@@ -100,8 +105,13 @@ namespace Bacheca_Server
             {
                 foreach (Item memo in MemoList)
                 {
+                    string MemoID_send = "";
+                    for(int i = 0; i < memo.MemoID.Length; i++)
+                    {
+                        MemoID_send += memo.MemoID[i];
+                    }
                     Memos += memo.Username + "|" + memo.Board + "|" +
-                        memo.Visibility.ToString() + "|" + Convert.ToString(memo.Length) + "|" + memo.Date.ToString() + "|" + memo.Text + "|**"; ;
+                        memo.Visibility.ToString() + "|" + MemoID_send + "|" + Convert.ToString(memo.Length) + "|" + memo.Date.ToString() + "|" + memo.Text + "|**"; ;
                 }
             }
             else
@@ -115,12 +125,13 @@ namespace Bacheca_Server
             Item item = new Item();
             string[] args = packedMsg.Split('|');
            
-            item.uesrName = args[1];
+            item.userName = args[1];
             item.boardName = args[2];
             item.visible = Convert.ToBoolean(args[3]);
-            item.length = Convert.ToInt32(args[4]);
-            item.fixed_date = DateTime.Parse(args[5]);
-            item.text = args[6];
+            item.MemoId = args[4].ToCharArray();
+            item.length = Convert.ToInt32(args[5]);
+            item.fixed_date = DateTime.Parse(args[6]);
+            item.text = args[7];
 
 
             return item;
@@ -201,6 +212,22 @@ namespace Bacheca_Server
             }
             return index;
         }
+        public void RemoveBoard(string boardID)
+        {
+            bool found = false;
+            int i = 0;
+            while (!found && i < BoardsList.Count)
+            {
+                if (BoardsList[i].ID == boardID.ToCharArray())
+                    found = true;
+                i++;
+            }
+            if (i > -1)
+            {
+                BoardsList.Remove(BoardsList[i]);
+                JsonSerializer.Serialize(BoardsList, typeof(List<Item>));
+            }
+        }
         private bool IsEqual(char[] a,char[] b)
         {
             bool ok = true;
@@ -263,6 +290,7 @@ namespace Bacheca_Server
             file.Dispose();
             Id = GenerateID(boardName,boardUsers[0]);
             memos = new List<Item>();
+            Load();
         }
         
         public void Load()
@@ -286,18 +314,31 @@ namespace Bacheca_Server
             Unload();
         }
 
-        public void RemoveMemo(Item memo)
+        public void RemoveMemo(string MemoID)
         {
             //Rimuove il memo dal file
-            memos.Remove(memo);
-        }
-
-        public void EditMemo(Item Memo)
-        {
-            //Modifica il memo
+            Load();
+            bool found = false;
+            int i = 0;
+            while (!found && i < memos.Count)
+            {
+                string id_c = "";
+                for (int j = 0; j < memos[i].MemoID.Length; j++)
+                {
+                    id_c += memos[i].MemoID[j];
+                }
+                if (id_c == MemoID)
+                    found = true;
+                i++;
+            }
+            if (i > -1)
+            {
+                memos.Remove(memos[i - 1]);
+                JsonSerializer.Serialize(memos, typeof(List<Item>));
+            }
+            
             
         }
-
         private char[] GenerateID(string boardname,string user)
         {
             Id = new char[5];
@@ -319,7 +360,6 @@ namespace Bacheca_Server
             return hash;
         }
     }
-
     public class ClientManager
     {
         Socket ManagerSocket;
@@ -386,7 +426,6 @@ namespace Bacheca_Server
                         else
                             res = "%" + "NOT FOUND" + "%%";
                     } break;
-
                 case "CHECK++":
                     {
                         res = "+" + BoardsManager.Exists(request.Split("|")[1] + request.Split("|")[2]) + "++";
@@ -404,7 +443,15 @@ namespace Bacheca_Server
                         res = "+|Bacheca Creata++";
 
                     } break;
-                
+                case "REMOVE++":
+                    {
+                        BoardsManager.OpenBoard(packetData[1], packetData[2]).RemoveMemo(packetData[3]);  
+                    } break;
+                case "DELETE++":
+                    {
+                        BoardsManager.RemoveBoard(packetData[1]);
+                    }
+                    break;
             }
             byte[] outbound = Encoding.ASCII.GetBytes(res);
             ManagerSocket.Send(outbound);
@@ -412,4 +459,5 @@ namespace Bacheca_Server
 
         
     }
+
 }

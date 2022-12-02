@@ -32,13 +32,26 @@ namespace Bacheca
         public string Board { get { return board_name; } set { board_name = value; } }
         public DateTime CDate { get { return creation_time; } set { creation_time = value; } }
         public DateTime Date { get { return fixed_date; } set { fixed_date = value; } }
+        public string MemoID { get { 
+                                        string id = ""; 
+                                        for (int i =0; i < MemoId.Length; i++)
+                                            id += MemoId[i];
+                                        return id;
+                                    }
+                                }
+        
         public byte[] Pack()
         {
             MemoId[0] = Text[0];
             MemoId[1] = Convert.ToChar(creation_time.Second);
-            MemoId[2] = Board[1];
+            MemoId[2] = Convert.ToChar(((Board[1] + creation_time.Ticks) % 97 ) + 13 );
+            string id = "";
+            for (int i = 0; i < MemoId.Length; i++)
+            {
+                id += MemoId[i];
+            }
             string msg = "";
-                msg += "^|" + Username + "|" + Board + "|" + Visibility.ToString() + "|" + Convert.ToString(MemoId) + "|" + 
+                msg += "^|" + Username + "|" + Board + "|" + Visibility.ToString() + "|" + id + "|" + 
                         Convert.ToString(Text.Length) + "|" + Date.ToString() + "|" + Text + "| **";
 
             byte[] output = Encoding.ASCII.GetBytes(msg);
@@ -55,19 +68,30 @@ namespace Bacheca
                 string[] Memos = msg.Split(delim);  //Separa i messaggi
                 foreach (string memo in Memos)
                 {
-                    if (memo != "|%%" && memo != "")
+
+                    if (memo != "" && memo != "|%%")
                     {
                         string mo = memo.Remove(0, 2);
-                        string[] memo_comp = mo.Split('|');
-                        Item m = new Item();
-                        m.Username = memo_comp[0];
-                        m.Board = memo_comp[1];
-                        m.Visibility = Convert.ToBoolean(memo_comp[2]);
-                        m.Length = Convert.ToInt32(memo_comp[3]);
-                        m.Date = DateTime.Parse(memo_comp[4]);
-                        m.Text = memo_comp[5];
-                        Memolist.Add(m);
+                        if (mo != "%%")
+                        {
+                            string[] memo_comp = mo.Split('|');
+                            Item m = new Item();
+                            m.Username = memo_comp[0];
+                            m.Board = memo_comp[1];
+                            m.Visibility = Convert.ToBoolean(memo_comp[2]);
+                            char[] id = new char[memo_comp[3].Length];
+                            for (int i = 0; i < id.Length; i++)
+                            {
+                                id[i] = memo_comp[3][i];
+                            }
+                            m.MemoId = id;
+                            m.Length = Convert.ToInt32(memo_comp[4]);
+                            m.Date = DateTime.Parse(memo_comp[5]);
+                            m.Text = memo_comp[6];
+                            Memolist.Add(m);
+                        }
                     }
+                    
                     
                 }
             
@@ -152,11 +176,24 @@ namespace Bacheca
 
         private void Add(Item memo)
         /* Salva in locale il promemoria */
+        { Memos.Add(memo); }
+
+        public void Remove(Item memo)
         {
-            Memos.Add(memo);
+            string msg = "+|" + memo.Board + "|" + memo.Username + "|" + memo.MemoID + "|REMOVE++";
+            byte[] packet = Encoding.ASCII.GetBytes(msg);
+            socket.Send(packet);
+                Memos.Remove(memo);
+        }
+        public void Delete(string ID)
+        {
+            string msg = "+|" + ID + "|DELETE++";
+            byte[] packet = Encoding.ASCII.GetBytes(msg);
+            socket.Send(packet);
         }
 
         public bool ExistsBoard(string boardname,string user)
+        /* Richede se la bacheca inserita in input esiste */
         {
             bool exists; 
             string msg = "+|" + boardname + "|" + user + "|CHECK++";
@@ -178,7 +215,7 @@ namespace Bacheca
         }
 
         public void CreateBoard(string boardname, string user, bool visible)
-            /* Richiede la creazione di una bacheca */
+        /* Richiede la creazione di una bacheca */
         {
             string msg = "+|" + boardname + "|" + user + "|" + visible +"|CREATE++";
             byte[] req = Encoding.ASCII.GetBytes(msg);
