@@ -95,21 +95,17 @@ namespace Bacheca_Server
         public static string Zip(List<Item> MemoList)
         /*Crea la lista di memo che poi viene usata dal client - è statico*/
         {
-            string Memos = "";
+            string Memos = "^|";
             if (MemoList.Count > 0)
             {
-                Memos = "^|";
                 foreach (Item memo in MemoList)
                 {
                     Memos += memo.Username + "|" + memo.Board + "|" +
-                        memo.Visibility.ToString() + "|" + Convert.ToString(memo.Length) + "|" + memo.Date.ToString() + "|" + memo.Text + "| **"; ;
+                        memo.Visibility.ToString() + "|" + Convert.ToString(memo.Length) + "|" + memo.Date.ToString() + "|" + memo.Text + "|**"; ;
                 }
-                Memos += "%%";
             }
             else
-            {
-                Memos = " %%";
-            }
+                Memos = " ";
 
             return Memos;
         }
@@ -272,19 +268,20 @@ namespace Bacheca_Server
         public void Load()
             // Carica in memoria i promemoria
         {
-            memos = JsonSerializer.Deserialize(filePath,typeof(List<Item>)) as List<Item>;
+            string memo = File.ReadAllText(filePath);
+            memos = JsonSerializer.Deserialize(memo,typeof(List<Item>)) as List<Item>;
         }
         public void Unload()
             // Scarica i promemoria dalla memoria
         {
             string memoFile = JsonSerializer.Serialize(memos);
             File.WriteAllText(filePath, memoFile);
-            memos.Clear();
+            //memos.Clear();
         }
         public void AddMemo(Item memo)
         {
             // Scrive il memo nel file json
-            
+            Load();
             memos.Add(memo);
             Unload();
         }
@@ -344,13 +341,13 @@ namespace Bacheca_Server
             {
                 bool validReq = true;
 
-                while (request.IndexOf("++") == -1 && validReq && request.IndexOf("**") == -1)
+                while (request.IndexOf("++") == -1  && request.IndexOf("**") == -1 && request.IndexOf("--") == -1 && validReq)
                 {
                     int bytesRec = ManagerSocket.Receive(bytes);
                     request += Encoding.ASCII.GetString(bytes, 0, bytesRec);
                     if (request.Length > 0)
                     {
-                        if (request[0] != '+' && request[0] != '^')
+                        if (request[0] != '+' && request[0] != '^' && request[0] != '-')
                             validReq = false;
                     }
                     else

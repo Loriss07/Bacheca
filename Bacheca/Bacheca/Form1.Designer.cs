@@ -102,7 +102,7 @@ namespace Bacheca
             // 
             // Board
             // 
-            this.Board.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(25)))), ((int)(((byte)(25)))), ((int)(((byte)(25)))));
+            this.Board.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(60)))), ((int)(((byte)(75)))));
             this.Board.Location = new System.Drawing.Point(344, 27);
             this.Board.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.Board.Name = "Board";

@@ -51,7 +51,7 @@ namespace Bacheca
                 string[] Memos = msg.Split(delim);  //Separa i messaggi
                 foreach (string memo in Memos)
                 {
-                    if (memo != "%%|%%" && memo != "")
+                    if (memo != "|%%" && memo != "")
                     {
                         string mo = memo.Remove(0, 2);
                         string[] memo_comp = mo.Split('|');

@@ -36,22 +36,27 @@ namespace Bacheca
 
 
             //  Recupera gli oggetti dal server se presenti
+            foreach (Item memo in Client.Download(_boardname, _usr))
+                PinMemo(memo);
 
-            PinMemo();
+            
         }
-        private void PinMemo()
+        private void PinMemo(Item memo)
         {
             //Mostra i promemoria
-                foreach (Item memo in Client.Download(_boardname, _usr))
-                {
-                    Label label = new Label();
-                    label.Text = memo.Text;
-                    label.CreateControl();
-                    Board.Controls.Add(label);
-                    label.BackColor = Color.Gainsboro;
-                    label.ForeColor = Color.DodgerBlue;
-                    label.Show();
-                }
+            Random rand = new Random();
+            Label label = new Label();
+            label.Text = memo.Text;
+            label.AutoSize = true;
+            label.CreateControl();
+            Board.Controls.Add(label);
+            label.BackColor = Color.Gainsboro;
+            label.ForeColor = Color.DodgerBlue;
+            label.Font = new Font("Arial", 14, FontStyle.Bold);
+            label.Location = new Point(rand.Next(Board.Size.Width) - label.Width, rand.Next(Board.Size.Height) - label.Height);
+            label.TextAlign = ContentAlignment.MiddleCenter;
+            label.Show();
+                
             
         }
         private void Send_Click(object sender, EventArgs e)
@@ -63,8 +68,7 @@ namespace Bacheca
             attivita.Board = boardName.Text;
             attivita.Username = Usr.Text;
             attivita.Visibility = Public.Checked;
-            
-
+            PinMemo(attivita);
             Client.Send(attivita);
         }
 
