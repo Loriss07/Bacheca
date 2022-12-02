@@ -161,6 +161,7 @@ namespace Bacheca
         private void button1_Click(object sender, EventArgs e)
         {
             Client.Delete(BoardName);
+            Client.Disconnect();
             Hide();
             _form.Show();
         }
