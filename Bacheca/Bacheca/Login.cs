@@ -27,24 +27,30 @@ namespace Bacheca
                 bool validBoard = false;
                 IP = IPAddress.Parse(Ip.Text);
                 Bacheca.Owner = this;
-                Bacheca.BoardName = BoardName.Text;
-                Bacheca.Username = Usr.Text;
-                Client.Connect(IP, 50000);
-                if (Client.ConnectedClient)
+                if (BoardName.Text.Length > 3 && Usr.Text.Length > 3)
                 {
-                    validBoard = Client.ExistsBoard(BoardName.Text, Usr.Text);
+                    Bacheca.BoardName = BoardName.Text;
+                    Bacheca.Username = Usr.Text;
+                    Client.Connect(IP, 50000);
+                    if (Client.ConnectedClient)
+                    {
+                        validBoard = Client.ExistsBoard(BoardName.Text, Usr.Text);
 
-                    if (validBoard && Client.ConnectedClient)
-                    {
-                        Bacheca.Run(IP, Usr.Text, ref Client);
-                        Hide();
-                    }
-                    else if (!validBoard)
-                    {
-                        MessageBox.Show("La bacheca non esiste!");
-                        btnLogin.Enabled = false;
+                        if (validBoard && Client.ConnectedClient)
+                        {
+                            Bacheca.Run(IP, Usr.Text, ref Client);
+                            Hide();
+                        }
+                        else if (!validBoard)
+                        {
+                            MessageBox.Show("La bacheca non esiste!");
+                            btnLogin.Enabled = false;
+                        }
                     }
                 }
+                else
+                    MessageBox.Show("Username e la bacheca devono essere lunghi almeno 3 caratteri...");
+                
                     
             }
             catch (FormatException fe) { MessageBox.Show("IP non valido :/ "); }
@@ -67,24 +73,30 @@ namespace Bacheca
                 bool validBoard = false;
                 IP = IPAddress.Parse(Ip.Text);
                 Bacheca.Owner = this;
-                Bacheca.BoardName = BoardName.Text;
-                Client.Connect(IP, 50000);
-                if (Client.ConnectedClient)
+                if (BoardName.Text.Length > 3 && Usr.Text.Length > 3)
                 {
-                    validBoard = Client.ExistsBoard(BoardName.Text, Usr.Text);
+                    Bacheca.BoardName = BoardName.Text;
+                    Bacheca.Username = Usr.Text;
+                    Client.Connect(IP, 50000);
+                    if (Client.ConnectedClient)
+                    {
+                        validBoard = Client.ExistsBoard(BoardName.Text, Usr.Text);
 
-                    if (!validBoard)
-                    {
-                        Client.CreateBoard(BoardName.Text, Usr.Text, PrivateBoard.Checked);
-                        Bacheca.Run(IP, Usr.Text, ref Client);
-                        Hide();
-                    }
-                    else
-                    {
-                        MessageBox.Show("La bacheca esiste già!");
-                        Create.Enabled = false;
+                        if (!validBoard)
+                        {
+                            Client.CreateBoard(BoardName.Text, Usr.Text, PrivateBoard.Checked);
+                            Bacheca.Run(IP, Usr.Text, ref Client);
+                            Hide();
+                        }
+                        else
+                        {
+                            MessageBox.Show("La bacheca esiste già!");
+                            Create.Enabled = false;
+                        }
                     }
                 }
+                   else
+                    MessageBox.Show("L'Username e la bacheca devono essere lunghi almeno 3 caratteri...");
 
 
 
