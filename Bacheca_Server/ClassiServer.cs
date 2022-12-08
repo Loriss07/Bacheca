@@ -232,8 +232,10 @@ namespace Bacheca_Server
             }
             if (i > -1)
             {
+                File.Delete(BoardsList[i].BoardPath);
                 BoardsList.Remove(BoardsList[i]);
                 JsonSerializer.Serialize(BoardsList, typeof(List<Item>));
+                
             }
             UnloadBoards();
             LoadBoards();
